@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "765982982230",
+    "project_id": "payguardian-8f7ae",
+    "storage_bucket": "payguardian-8f7ae.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:765982982230:android:2b1e879227eb34dbe3bbf7",
+        "android_client_info": {
+          "package_name": "com.example.payguardian"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKpBZrZ1dxxoaEHRW3QOcThCAeJi3jbbo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
