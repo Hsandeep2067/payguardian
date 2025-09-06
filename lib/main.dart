@@ -1,9 +1,13 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import 'package:payguardian/firebase_options.dart';
 import 'package:payguardian/screens/login_screen.dart';
-import 'package:payguardian/screens/home_screen.dart';
+import 'package:payguardian/screens/main_navigation_screen.dart';
+import 'package:payguardian/providers/customer_provider.dart';
+import 'package:payguardian/providers/installment_provider.dart';
+import 'package:payguardian/providers/dashboard_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,14 +20,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'PayGuardian',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => CustomerProvider()),
+        ChangeNotifierProvider(create: (context) => InstallmentProvider()),
+        ChangeNotifierProvider(create: (context) => DashboardProvider()),
+      ],
+      child: MaterialApp(
+        title: 'PayGuardian',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true,
+        ),
+        home: const AuthWrapper(),
+        debugShowCheckedModeBanner: false,
       ),
-      home: const AuthWrapper(),
-      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -39,16 +50,27 @@ class AuthWrapper extends StatelessWidget {
         // Show loading indicator while checking auth state
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Checking authentication...'),
+                ],
+              ),
+            ),
           );
         }
 
         // Check if user is authenticated
         if (snapshot.hasData && snapshot.data != null) {
-          // User is signed in, show home screen
-          return const HomeScreen();
+          // User is signed in, show main navigation screen
+          print('User authenticated: ${snapshot.data!.email}');
+          return const MainNavigationScreen();
         } else {
           // User is not signed in, show login screen
+          print('User not authenticated');
           return const LoginScreen();
         }
       },
