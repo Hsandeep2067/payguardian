@@ -6,6 +6,7 @@ import '../providers/installment_provider.dart';
 import '../models/customer.dart';
 import 'add_customer_screen.dart';
 import 'customer_details_screen.dart';
+import '../constants/app_colors.dart';
 
 class CustomersScreen extends StatefulWidget {
   const CustomersScreen({super.key});
@@ -32,12 +33,78 @@ class _CustomersScreenState extends State<CustomersScreen> {
     super.dispose();
   }
 
+  Widget _buildCustomerCard(BuildContext context, Customer customer) {
+    return Card(
+      color: AppColors.cardBackground,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: AppColors.border.withOpacity(0.3), width: 1),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.all(16),
+        leading: CircleAvatar(
+          backgroundColor: AppColors.primary,
+          child: Text(
+            customer.name.isNotEmpty ? customer.name[0].toUpperCase() : 'C',
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        title: Text(
+          customer.name,
+          style: const TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              customer.phone,
+              style: const TextStyle(color: AppColors.textPrimary),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              DateFormat('MMM dd, yyyy').format(customer.createdAt),
+              style: const TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 12,
+              ),
+            ),
+          ],
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          color: AppColors.iconPrimary,
+          size: 16,
+        ),
+        onTap: () {
+          // Only navigate if customer has an ID
+          if (customer.id != null) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    CustomerDetailsScreen(customerId: customer.id!),
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Customers'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: AppColors.cardBackground,
+        foregroundColor: AppColors.textPrimary,
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -49,6 +116,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                 ),
               );
             },
+            color: AppColors.iconPrimary,
           ),
         ],
       ),
@@ -61,10 +129,11 @@ class _CustomersScreenState extends State<CustomersScreen> {
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Search customers...',
-                prefixIcon: const Icon(Icons.search),
+                hintStyle: const TextStyle(color: Colors.white70),
+                prefixIcon: const Icon(Icons.search, color: Color(0xFF94a3b8)),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear),
+                        icon: const Icon(Icons.clear, color: Color(0xFF94a3b8)),
                         onPressed: () {
                           _searchController.clear();
                           setState(() {
@@ -75,8 +144,20 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     : null,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppColors.border),
                 ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppColors.border),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppColors.accent, width: 2),
+                ),
+                filled: true,
+                fillColor: AppColors.cardBackground,
               ),
+              style: const TextStyle(color: AppColors.textPrimary),
               onChanged: (value) {
                 setState(() {
                   _searchQuery = value;
@@ -90,7 +171,9 @@ class _CustomersScreenState extends State<CustomersScreen> {
             child: Consumer<CustomerProvider>(
               builder: (context, customerProvider, child) {
                 if (customerProvider.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                    child: CircularProgressIndicator(color: Colors.white),
+                  );
                 }
 
                 if (customerProvider.error != null) {
@@ -101,17 +184,19 @@ class _CustomersScreenState extends State<CustomersScreen> {
                         Icon(
                           Icons.error_outline,
                           size: 64,
-                          color: Theme.of(context).colorScheme.error,
+                          color: AppColors.error,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           'Error loading customers',
-                          style: Theme.of(context).textTheme.headlineSmall,
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(color: AppColors.textPrimary),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           customerProvider.error!,
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.textPrimary),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
@@ -119,6 +204,11 @@ class _CustomersScreenState extends State<CustomersScreen> {
                           onPressed: () {
                             customerProvider.initializeCustomers();
                           },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.buttonBackground,
+                            foregroundColor: AppColors.buttonText,
+                            side: BorderSide(color: AppColors.accent),
+                          ),
                           child: const Text('Retry'),
                         ),
                       ],
@@ -140,21 +230,23 @@ class _CustomersScreenState extends State<CustomersScreen> {
                               ? Icons.people_outline
                               : Icons.search_off,
                           size: 64,
-                          color: Colors.grey,
+                          color: AppColors.iconPrimary,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           _searchQuery.isEmpty
                               ? 'No customers yet'
                               : 'No customers found',
-                          style: Theme.of(context).textTheme.headlineSmall,
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(color: AppColors.textPrimary),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           _searchQuery.isEmpty
                               ? 'Add your first customer to get started'
                               : 'Try adjusting your search terms',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.textPrimary),
                         ),
                         if (_searchQuery.isEmpty) ...[
                           const SizedBox(height: 16),
@@ -168,6 +260,11 @@ class _CustomersScreenState extends State<CustomersScreen> {
                                 ),
                               );
                             },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.buttonBackground,
+                              foregroundColor: AppColors.buttonText,
+                              side: BorderSide(color: AppColors.accent),
+                            ),
                             icon: const Icon(Icons.add),
                             label: const Text('Add Customer'),
                           ),
@@ -202,185 +299,10 @@ class _CustomersScreenState extends State<CustomersScreen> {
             MaterialPageRoute(builder: (context) => const AddCustomerScreen()),
           );
         },
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.buttonText,
         child: const Icon(Icons.add),
       ),
-    );
-  }
-
-  Widget _buildCustomerCard(BuildContext context, Customer customer) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      child: ListTile(
-        contentPadding: const EdgeInsets.all(16),
-        leading: CircleAvatar(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          child: Text(
-            customer.name.isNotEmpty ? customer.name[0].toUpperCase() : 'C',
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-        title: Text(
-          customer.name,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                const Icon(Icons.phone, size: 16, color: Colors.grey),
-                const SizedBox(width: 4),
-                Text(customer.phone),
-              ],
-            ),
-            const SizedBox(height: 2),
-            Row(
-              children: [
-                const Icon(Icons.credit_card, size: 16, color: Colors.grey),
-                const SizedBox(width: 4),
-                Text(customer.nic),
-              ],
-            ),
-            const SizedBox(height: 2),
-            Row(
-              children: [
-                const Icon(Icons.location_on, size: 16, color: Colors.grey),
-                const SizedBox(width: 4),
-                Expanded(
-                  child: Text(
-                    customer.address,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              'Added: ${DateFormat('MMM dd, yyyy').format(customer.createdAt)}',
-              style: Theme.of(context).textTheme.bodySmall,
-            ),
-          ],
-        ),
-        trailing: PopupMenuButton<String>(
-          onSelected: (value) async {
-            switch (value) {
-              case 'view':
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        CustomerDetailsScreen(customerId: customer.id!),
-                  ),
-                );
-                break;
-              case 'edit':
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => AddCustomerScreen(customer: customer),
-                  ),
-                );
-                break;
-              case 'delete':
-                _showDeleteConfirmationDialog(context, customer);
-                break;
-            }
-          },
-          itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'view',
-              child: Row(
-                children: [
-                  Icon(Icons.visibility),
-                  SizedBox(width: 8),
-                  Text('View Details'),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'edit',
-              child: Row(
-                children: [Icon(Icons.edit), SizedBox(width: 8), Text('Edit')],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'delete',
-              child: Row(
-                children: [
-                  Icon(Icons.delete, color: Colors.red),
-                  SizedBox(width: 8),
-                  Text('Delete', style: TextStyle(color: Colors.red)),
-                ],
-              ),
-            ),
-          ],
-        ),
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  CustomerDetailsScreen(customerId: customer.id!),
-            ),
-          );
-        },
-      ),
-    );
-  }
-
-  void _showDeleteConfirmationDialog(BuildContext context, Customer customer) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Delete Customer'),
-          content: Text(
-            'Are you sure you want to delete ${customer.name}? This will also delete all associated installment plans and payments.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-
-                final success = await context
-                    .read<CustomerProvider>()
-                    .deleteCustomer(customer.id!);
-
-                if (mounted) {
-                  if (success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('${customer.name} deleted successfully'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Failed to delete ${customer.name}'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                }
-              },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Delete'),
-            ),
-          ],
-        );
-      },
     );
   }
 }

@@ -6,6 +6,7 @@ import '../providers/dashboard_provider.dart';
 import '../providers/customer_provider.dart';
 import '../providers/installment_provider.dart';
 import '../services/auth_service.dart';
+import '../constants/app_colors.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -36,7 +37,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Logout failed: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -50,12 +51,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
         return AlertDialog(
           title: const Text('Logout'),
           content: const Text('Are you sure you want to logout?'),
+          backgroundColor: AppColors.cardBackground,
+          titleTextStyle: const TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+          contentTextStyle: const TextStyle(color: AppColors.textPrimary),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
               child: const Text('Cancel'),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.textPrimary,
+              ),
             ),
             ElevatedButton(
               onPressed: () {
@@ -63,8 +74,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 _logout();
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.error,
+                foregroundColor: AppColors.buttonText,
               ),
               child: const Text('Logout'),
             ),
@@ -77,29 +88,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Dashboard'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: AppColors.cardBackground,
+        foregroundColor: AppColors.textPrimary,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
               context.read<DashboardProvider>().refreshDashboardWithRetry();
             },
+            color: AppColors.iconPrimary,
           ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.account_circle),
+            color: AppColors.cardBackground,
             onSelected: (String result) {
               if (result == 'logout') {
                 _showLogoutConfirmation();
               }
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem<String>(
+              PopupMenuItem<String>(
                 value: 'logout',
                 child: ListTile(
-                  leading: Icon(Icons.logout),
-                  title: Text('Logout'),
+                  leading: const Icon(Icons.logout, color: Color(0xFF94a3b8)),
+                  title: const Text(
+                    'Logout',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ],
@@ -109,7 +127,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: Consumer<DashboardProvider>(
         builder: (context, dashboardProvider, child) {
           if (dashboardProvider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            );
           }
 
           if (dashboardProvider.error != null) {
@@ -117,29 +137,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.error,
-                  ),
+                  Icon(Icons.error_outline, size: 64, color: AppColors.error),
                   const SizedBox(height: 16),
                   Text(
                     'Error loading dashboard',
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     dashboardProvider.error!,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Please check your internet connection and try again.',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withOpacity(0.6),
+                      color: AppColors.textPrimary.withOpacity(0.6),
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -155,6 +173,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           dashboardProvider.clearError();
                           dashboardProvider.refreshDashboardWithRetry();
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.buttonBackground,
+                          foregroundColor: AppColors.buttonText,
+                          side: BorderSide(color: AppColors.accent),
+                        ),
                         child: const Text('Retry'),
                       ),
                       ElevatedButton(
@@ -183,6 +206,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             dashboardProvider.refreshDashboardWithRetry();
                           }
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.buttonBackground,
+                          foregroundColor: AppColors.buttonText,
+                          side: BorderSide(color: AppColors.accent),
+                        ),
                         child: const Text('Test Connection'),
                       ),
                       ElevatedButton(
@@ -191,6 +219,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           dashboardProvider.clearError();
                           await dashboardProvider.testFirestore();
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.buttonBackground,
+                          foregroundColor: AppColors.buttonText,
+                          side: BorderSide(color: AppColors.accent),
+                        ),
                         child: const Text('Test Database'),
                       ),
                       ElevatedButton(
@@ -199,6 +232,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           dashboardProvider.clearError();
                           await dashboardProvider.testFirebaseConfig();
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.buttonBackground,
+                          foregroundColor: AppColors.buttonText,
+                          side: BorderSide(color: AppColors.accent),
+                        ),
                         child: const Text('Test Config'),
                       ),
                       ElevatedButton(
@@ -209,6 +247,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           context.read<InstallmentProvider>().clearError();
                           dashboardProvider.refreshDashboardWithRetry();
                         },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.buttonBackground,
+                          foregroundColor: AppColors.buttonText,
+                          side: BorderSide(color: AppColors.accent),
+                        ),
                         child: const Text('Clear Cache'),
                       ),
                     ],
@@ -235,9 +278,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         const Text(
                           '• Ensure you are logged in with the correct account',
                         ),
-                        const Text(
-                          '• Check your internet connection',
-                        ),
+                        const Text('• Check your internet connection'),
                         const Text(
                           '• Make sure your Firebase rules are deployed',
                         ),
