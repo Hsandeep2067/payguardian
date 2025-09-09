@@ -80,8 +80,7 @@ class Payment {
     // A payment is overdue if:
     // 1. It's still pending
     // 2. The due date has passed (including today)
-    return status == PaymentStatus.pending &&
-        !DateTime.now().isBefore(dueDate);
+    return status == PaymentStatus.pending && !DateTime.now().isBefore(dueDate);
   }
 
   // Check if payment is due soon (within 7 days)

@@ -13,10 +13,10 @@ import 'package:payguardian/services/firestore_service.dart'; // Add this import
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  
+
   // Start overdue payment check
   FirestoreService().startOverdueCheck();
-  
+
   runApp(const MyApp());
 }
 
