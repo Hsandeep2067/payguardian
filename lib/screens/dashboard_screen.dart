@@ -113,10 +113,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               PopupMenuItem<String>(
                 value: 'logout',
                 child: ListTile(
-                  leading: const Icon(Icons.logout, color: Color(0xFF94a3b8)),
-                  title: const Text(
+                  leading: Icon(Icons.logout, color: AppColors.iconPrimary),
+                  title: Text(
                     'Logout',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: AppColors.textPrimary),
                   ),
                 ),
               ),
@@ -188,15 +188,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           if (context.mounted) {
                             if (isConnected) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Connection successful!'),
+                                SnackBar(
+                                  content: const Text('Connection successful!'),
                                   backgroundColor: Colors.green,
                                 ),
                               );
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
+                                SnackBar(
+                                  content: const Text(
                                     'Connection failed. Check your internet.',
                                   ),
                                   backgroundColor: Colors.red,
@@ -261,29 +261,36 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     padding: const EdgeInsets.all(16),
                     margin: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.blue.shade50,
+                      color: AppColors.cardBackground,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                        Text(
                           'Troubleshooting Tips:',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
+                            color: AppColors.textPrimary,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        const Text(
+                        Text(
                           '• Ensure you are logged in with the correct account',
+                          style: TextStyle(color: AppColors.textPrimary),
                         ),
-                        const Text('• Check your internet connection'),
-                        const Text(
+                        Text(
+                          '• Check your internet connection',
+                          style: TextStyle(color: AppColors.textPrimary),
+                        ),
+                        Text(
                           '• Make sure your Firebase rules are deployed',
+                          style: TextStyle(color: AppColors.textPrimary),
                         ),
-                        const Text(
+                        Text(
                           '• Verify your Firebase project configuration',
+                          style: TextStyle(color: AppColors.textPrimary),
                         ),
                         const SizedBox(height: 8),
                         TextButton(
@@ -293,87 +300,126 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               context: context,
                               builder: (BuildContext context) {
                                 return AlertDialog(
-                                  title: const Text('Database Error Help'),
+                                  title: Text(
+                                    'Database Error Help',
+                                    style: TextStyle(
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
                                   content: SingleChildScrollView(
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        const Text(
+                                        Text(
                                           'This error typically occurs when there are issues with Firebase authentication or database permissions.',
-                                          style: TextStyle(fontSize: 16),
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            color: AppColors.textPrimary,
+                                          ),
                                         ),
                                         const SizedBox(height: 16),
-                                        const Text(
+                                        Text(
                                           'Possible Solutions:',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16,
+                                            color: AppColors.textPrimary,
                                           ),
                                         ),
                                         const SizedBox(height: 8),
-                                        const Text(
+                                        Text(
                                           '1. Check Firebase Authentication:',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
+                                            color: AppColors.textPrimary,
                                           ),
                                         ),
-                                        const Text(
+                                        Text(
                                           '   • Ensure you are logged in with a valid account',
-                                          style: TextStyle(fontSize: 14),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: AppColors.textPrimary,
+                                          ),
                                         ),
                                         const SizedBox(height: 8),
-                                        const Text(
+                                        Text(
                                           '2. Verify Firestore Security Rules:',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
+                                            color: AppColors.textPrimary,
                                           ),
                                         ),
-                                        const Text(
+                                        Text(
                                           '   • Make sure your Firestore rules allow read/write access for authenticated users',
-                                          style: TextStyle(fontSize: 14),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: AppColors.textPrimary,
+                                          ),
                                         ),
                                         const SizedBox(height: 8),
-                                        const Text(
+                                        Text(
                                           '3. Check Firebase Project Configuration:',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
+                                            color: AppColors.textPrimary,
                                           ),
                                         ),
-                                        const Text(
+                                        Text(
                                           '   • Verify that your Firebase configuration files are correct',
-                                          style: TextStyle(fontSize: 14),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: AppColors.textPrimary,
+                                          ),
                                         ),
                                         const SizedBox(height: 8),
-                                        const Text(
+                                        Text(
                                           '4. Internet Connection:',
                                           style: TextStyle(
                                             fontWeight: FontWeight.bold,
+                                            color: AppColors.textPrimary,
                                           ),
                                         ),
-                                        const Text(
+                                        Text(
                                           '   • Ensure you have a stable internet connection',
-                                          style: TextStyle(fontSize: 14),
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: AppColors.textPrimary,
+                                          ),
                                         ),
                                       ],
                                     ),
+                                  ),
+                                  backgroundColor: AppColors.cardBackground,
+                                  titleTextStyle: TextStyle(
+                                    color: AppColors.textPrimary,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  contentTextStyle: TextStyle(
+                                    color: AppColors.textPrimary,
                                   ),
                                   actions: [
                                     TextButton(
                                       onPressed: () {
                                         Navigator.of(context).pop();
                                       },
-                                      child: const Text('Close'),
+                                      child: Text(
+                                        'Close',
+                                        style: TextStyle(
+                                          color: AppColors.textPrimary,
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 );
                               },
                             );
                           },
-                          child: const Text(
+                          child: Text(
                             'Show Detailed Help',
                             style: TextStyle(
-                              color: Colors.blue,
+                              color: AppColors.accent,
                               decoration: TextDecoration.underline,
                             ),
                           ),
@@ -388,7 +434,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
           final stats = dashboardProvider.dashboardStats;
           if (stats == null) {
-            return const Center(child: Text('No data available'));
+            return Center(
+              child: Text(
+                'No data available',
+                style: TextStyle(color: AppColors.textPrimary),
+              ),
+            );
           }
 
           return RefreshIndicator(
@@ -431,6 +482,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     DashboardProvider provider,
   ) {
     return Card(
+      color: AppColors.cardBackground,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -438,28 +490,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.dashboard,
-                  color: Theme.of(context).colorScheme.primary,
-                  size: 28,
-                ),
+                Icon(Icons.dashboard, color: AppColors.iconPrimary, size: 28),
                 const SizedBox(width: 12),
                 Text(
                   'Business Overview',
-                  style: Theme.of(context).textTheme.headlineSmall,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
             Text(
               provider.getDashboardSummary(),
-              style: Theme.of(context).textTheme.bodyLarge,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(color: AppColors.textPrimary),
             ),
             if (provider.lastUpdated != null) ...[
               const SizedBox(height: 8),
               Text(
                 'Last updated: ${DateFormat('MMM dd, yyyy HH:mm').format(provider.lastUpdated!)}',
-                style: Theme.of(context).textTheme.bodySmall,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.textPrimary.withOpacity(0.7),
+                ),
               ),
             ],
           ],
@@ -474,7 +528,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       children: [
         Text(
           'Quick Statistics',
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(color: AppColors.textPrimary),
         ),
         const SizedBox(height: 16),
         GridView.count(
@@ -490,7 +546,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               'Total Customers',
               stats.totalCustomers.toString(),
               Icons.people,
-              Colors.blue,
+              AppColors.primary,
             ),
             _buildStatCard(
               context,
@@ -552,6 +608,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     Color color,
   ) {
     return Card(
+      color: AppColors.cardBackground,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -564,7 +621,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Flexible(
                   child: Text(
                     title,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -594,6 +653,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final formatter = NumberFormat.currency(symbol: 'Rs. ', decimalDigits: 0);
 
     return Card(
+      color: AppColors.cardBackground,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -606,7 +666,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 Flexible(
                   child: Text(
                     title,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -631,11 +693,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Analytics', style: Theme.of(context).textTheme.headlineSmall),
+        Text(
+          'Analytics',
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(color: AppColors.textPrimary),
+        ),
         const SizedBox(height: 16),
 
         // Monthly Revenue Chart
         Card(
+          color: AppColors.cardBackground,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -643,7 +711,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 Text(
                   'Monthly Revenue Trend',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
@@ -658,6 +728,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
         // Payment Status Distribution
         Card(
+          color: AppColors.cardBackground,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -665,7 +736,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               children: [
                 Text(
                   'Payment Status Distribution',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
@@ -684,7 +757,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildRevenueChart(List<Map<String, dynamic>> revenueData) {
     if (revenueData.isEmpty) {
-      return const Center(child: Text('No revenue data available'));
+      return Center(
+        child: Text(
+          'No revenue data available',
+          style: TextStyle(color: AppColors.textPrimary),
+        ),
+      );
     }
 
     final spots = revenueData.asMap().entries.map((entry) {
@@ -704,7 +782,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               getTitlesWidget: (value, meta) {
                 return Text(
                   NumberFormat.compact().format(value),
-                  style: const TextStyle(fontSize: 10),
+                  style: TextStyle(fontSize: 10, color: AppColors.textPrimary),
                 );
               },
             ),
@@ -717,10 +795,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 if (index >= 0 && index < revenueData.length) {
                   return Text(
                     revenueData[index]['month'],
-                    style: const TextStyle(fontSize: 10),
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppColors.textPrimary,
+                    ),
                   );
                 }
-                return const Text('');
+                return Text('', style: TextStyle(color: AppColors.textPrimary));
               },
             ),
           ),
@@ -751,7 +832,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildPaymentStatusPieChart(Map<String, double> statusData) {
     if (statusData.isEmpty) {
-      return const Center(child: Text('No payment data available'));
+      return Center(
+        child: Text(
+          'No payment data available',
+          style: TextStyle(color: AppColors.textPrimary),
+        ),
+      );
     }
 
     final sections = statusData.entries.map((entry) {
@@ -775,10 +861,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         value: entry.value,
         title: '${entry.value.toInt()}',
         radius: 50,
-        titleStyle: const TextStyle(
+        titleStyle: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color: AppColors.textPrimary,
         ),
       );
     }).toList();
@@ -831,7 +917,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Expanded(
                       child: Text(
                         '${entry.key}: ${entry.value.toInt()}',
-                        style: const TextStyle(fontSize: 12),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.textPrimary,
+                        ),
                       ),
                     ),
                   ],
@@ -850,6 +939,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     if (alertsCount == 0) {
       return Card(
+        color: AppColors.cardBackground,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -859,7 +949,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Expanded(
                 child: Text(
                   'All systems running smoothly!',
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.copyWith(color: AppColors.textPrimary),
                 ),
               ),
             ],
@@ -869,7 +961,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
 
     return Card(
-      color: hasCriticalAlerts ? Colors.red.shade50 : Colors.orange.shade50,
+      color: AppColors.cardBackground,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -889,7 +981,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ? 'Critical Alerts'
                         : 'Attention Required',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: hasCriticalAlerts ? Colors.red : Colors.orange,
+                      color: AppColors.textPrimary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -906,7 +998,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 12),
             Text(
               'You have $alertsCount item${alertsCount > 1 ? 's' : ''} requiring attention.',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
             ),
           ],
         ),
@@ -926,11 +1020,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       children: [
         Text(
           'Overdue Payments',
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(color: AppColors.textPrimary),
         ),
         const SizedBox(height: 16),
         Card(
-          color: Colors.red.shade50,
+          color: AppColors.cardBackground,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -942,7 +1038,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Text(
                       '${provider.overduePayments} Overdue Payments',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.red,
+                        color: AppColors.textPrimary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -951,7 +1047,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 const SizedBox(height: 12),
                 Text(
                   'These payments require immediate attention. The due dates for these payments have passed.',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
