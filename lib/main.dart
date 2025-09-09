@@ -8,10 +8,15 @@ import 'package:payguardian/screens/main_navigation_screen.dart';
 import 'package:payguardian/providers/customer_provider.dart';
 import 'package:payguardian/providers/installment_provider.dart';
 import 'package:payguardian/providers/dashboard_provider.dart';
+import 'package:payguardian/services/firestore_service.dart'; // Add this import
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  
+  // Start overdue payment check
+  FirestoreService().startOverdueCheck();
+  
   runApp(const MyApp());
 }
 

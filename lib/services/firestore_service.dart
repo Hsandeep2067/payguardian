@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:async';
 import '../models/customer.dart';
 import '../models/installment_plan.dart';
 import '../models/payment.dart';
@@ -11,6 +12,7 @@ class FirestoreService {
   FirestoreService._internal();
 
   final FirebaseFirestore _db = FirebaseFirestore.instance;
+  Timer? _overdueCheckTimer;
 
   // Make db accessible for connection checks
   FirebaseFirestore get db => _db;
@@ -338,7 +340,8 @@ class FirestoreService {
           .where((p) => p.status == PaymentStatus.paid)
           .length;
       final overduePayments = payments
-          .where((p) => p.status == PaymentStatus.overdue)
+          .where((p) => p.status == PaymentStatus.overdue || 
+                 (p.status == PaymentStatus.pending && p.isOverdue))
           .length;
 
       final totalPendingAmount = payments
@@ -350,7 +353,8 @@ class FirestoreService {
           .fold(0.0, (sum, p) => sum + p.amount);
 
       final totalOverdueAmount = payments
-          .where((p) => p.status == PaymentStatus.overdue)
+          .where((p) => p.status == PaymentStatus.overdue || 
+                 (p.status == PaymentStatus.pending && p.isOverdue))
           .fold(0.0, (sum, p) => sum + p.amount);
 
       // Calculate monthly revenue (last 12 months)
@@ -433,8 +437,38 @@ class FirestoreService {
           .map((doc) => Payment.fromMap(doc.data(), doc.id))
           .toList();
 
-      final allPaid = allPayments.every((p) => p.status == PaymentStatus.paid);
-      final hasOverdue = allPayments.any((p) => p.isOverdue);
+      // Update payment statuses if needed
+      final batch = _db.batch();
+      bool hasChanges = false;
+      
+      for (final payment in allPayments) {
+        if (payment.status == PaymentStatus.pending && payment.isOverdue) {
+          // Update payment status to overdue
+          final paymentRef = _db.collection(_paymentsCollection).doc(payment.id);
+          batch.update(paymentRef, {
+            'status': PaymentStatus.overdue.name,
+            'updatedAt': Timestamp.fromDate(DateTime.now()),
+          });
+          hasChanges = true;
+        }
+      }
+
+      if (hasChanges) {
+        await batch.commit();
+      }
+
+      // Re-fetch payments after updating statuses
+      final updatedPayments = await _db
+          .collection(_paymentsCollection)
+          .where('installmentPlanId', isEqualTo: planId)
+          .get();
+
+      final allUpdatedPayments = updatedPayments.docs
+          .map((doc) => Payment.fromMap(doc.data(), doc.id))
+          .toList();
+
+      final allPaid = allUpdatedPayments.every((p) => p.status == PaymentStatus.paid);
+      final hasOverdue = allUpdatedPayments.any((p) => p.status == PaymentStatus.overdue);
 
       InstallmentStatus newStatus;
       if (allPaid) {
@@ -505,5 +539,71 @@ class FirestoreService {
       'Dec',
     ];
     return months[month - 1];
+  }
+
+  // Start periodic overdue check
+  void startOverdueCheck() {
+    // Cancel existing timer if any
+    _overdueCheckTimer?.cancel();
+    
+    // Check for overdue payments every hour
+    _overdueCheckTimer = Timer.periodic(const Duration(hours: 1), (timer) {
+      _checkAndUpdateOverduePayments();
+    });
+  }
+
+  // Stop periodic overdue check
+  void stopOverdueCheck() {
+    _overdueCheckTimer?.cancel();
+    _overdueCheckTimer = null;
+  }
+
+  // Check and update overdue payments
+  Future<void> _checkAndUpdateOverduePayments() async {
+    try {
+      print('Checking for overdue payments...');
+      
+      // Get all pending payments
+      final paymentsSnapshot = await _db
+          .collection(_paymentsCollection)
+          .where('status', isEqualTo: PaymentStatus.pending.name)
+          .get();
+
+      if (paymentsSnapshot.docs.isEmpty) {
+        print('No pending payments to check');
+        return;
+      }
+
+      print('Found ${paymentsSnapshot.docs.length} pending payments to check');
+
+      final batch = _db.batch();
+      int updatedCount = 0;
+
+      for (final doc in paymentsSnapshot.docs) {
+        final payment = Payment.fromMap(doc.data(), doc.id);
+        
+        // Check if payment is overdue
+        if (payment.isOverdue) {
+          print('Payment ${payment.id} is overdue');
+          
+          // Update payment status to overdue
+          final paymentRef = _db.collection(_paymentsCollection).doc(payment.id);
+          batch.update(paymentRef, {
+            'status': PaymentStatus.overdue.name,
+            'updatedAt': Timestamp.fromDate(DateTime.now()),
+          });
+          updatedCount++;
+        }
+      }
+
+      if (updatedCount > 0) {
+        await batch.commit();
+        print('Updated $updatedCount payments to overdue status');
+      } else {
+        print('No payments needed status update');
+      }
+    } catch (e) {
+      print('Error checking overdue payments: $e');
+    }
   }
 }

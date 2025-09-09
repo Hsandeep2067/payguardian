@@ -84,13 +84,13 @@ class DashboardProvider extends ChangeNotifier {
       // Get all payments and filter for overdue ones
       final paymentsSnapshot = await _firestoreService.db
           .collection('payments')
+          .where('status', isEqualTo: 'overdue') // Only get overdue payments
           .get();
       final allPayments = paymentsSnapshot.docs
           .map((doc) => Payment.fromMap(doc.data(), doc.id))
           .toList();
 
-      // Filter for overdue payments
-      _overduePayments = allPayments.where((p) => p.isOverdue).toList();
+      _overduePayments = allPayments;
     } catch (e) {
       print('Error loading overdue payments: $e');
       _overduePayments = [];
@@ -172,10 +172,15 @@ class DashboardProvider extends ChangeNotifier {
   Map<String, double> getPaymentStatusDistribution() {
     if (_dashboardStats == null) return {};
 
+    // Make sure we're counting pending payments that are actually overdue
+    final pendingCount = _dashboardStats!.pendingPayments;
+    final paidCount = _dashboardStats!.paidPayments;
+    final overdueCount = _dashboardStats!.overduePayments;
+
     return {
-      'Paid': _dashboardStats!.paidPayments.toDouble(),
-      'Pending': _dashboardStats!.pendingPayments.toDouble(),
-      'Overdue': _dashboardStats!.overduePayments.toDouble(),
+      'Paid': paidCount.toDouble(),
+      'Pending': pendingCount.toDouble(),
+      'Overdue': overdueCount.toDouble(),
     };
   }
 
@@ -184,7 +189,7 @@ class DashboardProvider extends ChangeNotifier {
     if (_lastUpdated == null) return true;
     final now = DateTime.now();
     final difference = now.difference(_lastUpdated!);
-    return difference.inMinutes > 5;
+    return difference.inMinutes > 1; // Refresh more frequently
   }
 
   // Get alerts count (overdue payments + critical metrics)

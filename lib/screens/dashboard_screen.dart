@@ -18,7 +18,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DashboardProvider>().refreshDashboardWithRetry();
+      final provider = context.read<DashboardProvider>();
+      // Always refresh when entering the dashboard
+      provider.refreshDashboardWithRetry();
     });
   }
 
