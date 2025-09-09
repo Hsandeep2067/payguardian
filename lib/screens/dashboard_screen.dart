@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../providers/dashboard_provider.dart';
 import '../providers/customer_provider.dart';
 import '../providers/installment_provider.dart';
+import '../services/auth_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -14,6 +15,8 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  final AuthService _authService = AuthService();
+
   @override
   void initState() {
     super.initState();
@@ -22,6 +25,53 @@ class _DashboardScreenState extends State<DashboardScreen> {
       // Always refresh when entering the dashboard
       provider.refreshDashboardWithRetry();
     });
+  }
+
+  Future<void> _logout() async {
+    try {
+      await _authService.signOut();
+      // Navigation is handled by the auth state listener in main.dart
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Logout failed: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showLogoutConfirmation() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Logout'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _logout();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Logout'),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -36,6 +86,23 @@ class _DashboardScreenState extends State<DashboardScreen> {
             onPressed: () {
               context.read<DashboardProvider>().refreshDashboardWithRetry();
             },
+          ),
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.account_circle),
+            onSelected: (String result) {
+              if (result == 'logout') {
+                _showLogoutConfirmation();
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'logout',
+                child: ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text('Logout'),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -77,8 +144,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 16,
+                    runSpacing: 8,
                     children: [
                       ElevatedButton(
                         onPressed: () {
@@ -88,34 +157,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         },
                         child: const Text('Retry'),
                       ),
-                      const SizedBox(width: 16),
                       ElevatedButton(
                         onPressed: () async {
                           // Test connectivity
                           final isConnected = await dashboardProvider
                               .testConnectivity();
-                          if (isConnected) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Connection successful!'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Connection failed. Check your internet.',
+                          if (context.mounted) {
+                            if (isConnected) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Connection successful!'),
+                                  backgroundColor: Colors.green,
                                 ),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    'Connection failed. Check your internet.',
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                            }
+                            dashboardProvider.refreshDashboardWithRetry();
                           }
-                          dashboardProvider.refreshDashboardWithRetry();
                         },
                         child: const Text('Test Connection'),
                       ),
-                      const SizedBox(width: 16),
                       ElevatedButton(
                         onPressed: () async {
                           // Run Firestore tests
@@ -124,7 +193,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         },
                         child: const Text('Test Database'),
                       ),
-                      const SizedBox(width: 16),
                       ElevatedButton(
                         onPressed: () async {
                           // Test Firebase configuration
@@ -133,7 +201,144 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         },
                         child: const Text('Test Config'),
                       ),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Clear cache and retry
+                          dashboardProvider.clearError();
+                          context.read<CustomerProvider>().clearError();
+                          context.read<InstallmentProvider>().clearError();
+                          dashboardProvider.refreshDashboardWithRetry();
+                        },
+                        child: const Text('Clear Cache'),
+                      ),
                     ],
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    margin: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Troubleshooting Tips:',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        const Text(
+                          '• Ensure you are logged in with the correct account',
+                        ),
+                        const Text(
+                          '• Check your internet connection',
+                        ),
+                        const Text(
+                          '• Make sure your Firebase rules are deployed',
+                        ),
+                        const Text(
+                          '• Verify your Firebase project configuration',
+                        ),
+                        const SizedBox(height: 8),
+                        TextButton(
+                          onPressed: () {
+                            // Show more detailed help
+                            showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return AlertDialog(
+                                  title: const Text('Database Error Help'),
+                                  content: SingleChildScrollView(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'This error typically occurs when there are issues with Firebase authentication or database permissions.',
+                                          style: TextStyle(fontSize: 16),
+                                        ),
+                                        const SizedBox(height: 16),
+                                        const Text(
+                                          'Possible Solutions:',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        const Text(
+                                          '1. Check Firebase Authentication:',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const Text(
+                                          '   • Ensure you are logged in with a valid account',
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        const Text(
+                                          '2. Verify Firestore Security Rules:',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const Text(
+                                          '   • Make sure your Firestore rules allow read/write access for authenticated users',
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        const Text(
+                                          '3. Check Firebase Project Configuration:',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const Text(
+                                          '   • Verify that your Firebase configuration files are correct',
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                        const SizedBox(height: 8),
+                                        const Text(
+                                          '4. Internet Connection:',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const Text(
+                                          '   • Ensure you have a stable internet connection',
+                                          style: TextStyle(fontSize: 14),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.of(context).pop();
+                                      },
+                                      child: const Text('Close'),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: const Text(
+                            'Show Detailed Help',
+                            style: TextStyle(
+                              color: Colors.blue,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
