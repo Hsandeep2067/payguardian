@@ -370,7 +370,9 @@ class FirestoreService {
         overduePayments: overduePayments,
         monthlyRevenue: monthlyRevenue,
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('Error in getDashboardStats: $e');
+      print('Stack trace: $stackTrace');
       throw Exception('Failed to get dashboard stats: $e');
     }
   }
@@ -383,11 +385,23 @@ class FirestoreService {
     final batch = _db.batch();
 
     for (int i = 1; i <= plan.numberOfInstallments; i++) {
-      final dueDate = DateTime(
-        plan.startDate.year,
-        plan.startDate.month + i,
-        plan.startDate.day,
-      );
+      // Calculate due date based on plan's due date or start date
+      DateTime dueDate;
+      if (plan.dueDate != null) {
+        // If plan has a due date, use it as the base
+        dueDate = DateTime(
+          plan.dueDate!.year,
+          plan.dueDate!.month,
+          plan.dueDate!.day,
+        );
+      } else {
+        // Otherwise, calculate based on start date
+        dueDate = DateTime(
+          plan.startDate.year,
+          plan.startDate.month + i,
+          plan.startDate.day,
+        );
+      }
 
       final payment = Payment(
         installmentPlanId: planId,

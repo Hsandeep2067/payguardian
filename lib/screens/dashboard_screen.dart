@@ -75,13 +75,63 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Clear error before retrying
-                      dashboardProvider.clearError();
-                      dashboardProvider.refreshDashboardWithRetry();
-                    },
-                    child: const Text('Retry'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          // Clear error before retrying
+                          dashboardProvider.clearError();
+                          dashboardProvider.refreshDashboardWithRetry();
+                        },
+                        child: const Text('Retry'),
+                      ),
+                      const SizedBox(width: 16),
+                      ElevatedButton(
+                        onPressed: () async {
+                          // Test connectivity
+                          final isConnected = await dashboardProvider
+                              .testConnectivity();
+                          if (isConnected) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Connection successful!'),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Connection failed. Check your internet.',
+                                ),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
+                          dashboardProvider.refreshDashboardWithRetry();
+                        },
+                        child: const Text('Test Connection'),
+                      ),
+                      const SizedBox(width: 16),
+                      ElevatedButton(
+                        onPressed: () async {
+                          // Run Firestore tests
+                          dashboardProvider.clearError();
+                          await dashboardProvider.testFirestore();
+                        },
+                        child: const Text('Test Database'),
+                      ),
+                      const SizedBox(width: 16),
+                      ElevatedButton(
+                        onPressed: () async {
+                          // Test Firebase configuration
+                          dashboardProvider.clearError();
+                          await dashboardProvider.testFirebaseConfig();
+                        },
+                        child: const Text('Test Config'),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -107,6 +157,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                   // Quick stats cards
                   _buildQuickStatsSection(context, stats),
+                  const SizedBox(height: 24),
+
+                  // Overdue payments section
+                  _buildOverduePaymentsSection(context, dashboardProvider),
                   const SizedBox(height: 24),
 
                   // Charts section
@@ -609,6 +663,69 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  // Add this new method to build the overdue payments section
+  Widget _buildOverduePaymentsSection(
+    BuildContext context,
+    DashboardProvider provider,
+  ) {
+    // For now, we'll create a simple section that shows the overdue payments count
+    // In a more advanced implementation, this could show detailed overdue payment information
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Overdue Payments',
+          style: Theme.of(context).textTheme.headlineSmall,
+        ),
+        const SizedBox(height: 16),
+        Card(
+          color: Colors.red.shade50,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.warning, color: Colors.red, size: 24),
+                    const SizedBox(width: 12),
+                    Text(
+                      '${provider.overduePayments} Overdue Payments',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Colors.red,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'These payments require immediate attention. The due dates for these payments have passed.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    // TODO: Navigate to payments screen to view details
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Navigate to overdue payments list'),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('View Overdue Payments'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

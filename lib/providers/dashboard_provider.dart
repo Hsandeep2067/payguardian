@@ -1,19 +1,24 @@
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:math';
 import '../models/dashboard_stats.dart';
 import '../services/firestore_service.dart';
+import '../models/payment.dart'; // Add this import
 
 class DashboardProvider extends ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
 
   DashboardStats? _dashboardStats;
+  List<Payment> _overduePayments =
+      []; // Add this field to track overdue payments
   bool _isLoading = false;
   String? _error;
   DateTime? _lastUpdated;
 
   // Getters
   DashboardStats? get dashboardStats => _dashboardStats;
+  List<Payment> get overduePaymentsList => _overduePayments; // Add this getter
   bool get isLoading => _isLoading;
   String? get error => _error;
   DateTime? get lastUpdated => _lastUpdated;
@@ -46,8 +51,12 @@ class DashboardProvider extends ChangeNotifier {
       _dashboardStats = stats;
       _lastUpdated = DateTime.now();
       _setError(null);
-    } catch (e) {
+
+      // Load detailed overdue payments
+      await _loadOverduePayments();
+    } catch (e, stackTrace) {
       print('Dashboard error: $e');
+      print('Stack trace: $stackTrace');
       String errorMessage = 'Failed to load dashboard statistics. ';
 
       // Provide more user-friendly error messages
@@ -56,13 +65,35 @@ class DashboardProvider extends ChangeNotifier {
         errorMessage += 'Please check your internet connection and try again.';
       } else if (e.toString().contains('PERMISSION_DENIED')) {
         errorMessage += 'Access denied. Please contact support.';
+      } else if (e.toString().contains('Failed to get dashboard stats')) {
+        errorMessage +=
+            'There was an issue connecting to the database. Please check your internet connection and try again.';
       } else {
-        errorMessage += 'Please try again later.';
+        errorMessage += 'Please try again later. Error: ${e.toString()}';
       }
 
       _setError(errorMessage);
     } finally {
       _setLoading(false);
+    }
+  }
+
+  // Load detailed overdue payments
+  Future<void> _loadOverduePayments() async {
+    try {
+      // Get all payments and filter for overdue ones
+      final paymentsSnapshot = await _firestoreService.db
+          .collection('payments')
+          .get();
+      final allPayments = paymentsSnapshot.docs
+          .map((doc) => Payment.fromMap(doc.data(), doc.id))
+          .toList();
+
+      // Filter for overdue payments
+      _overduePayments = allPayments.where((p) => p.isOverdue).toList();
+    } catch (e) {
+      print('Error loading overdue payments: $e');
+      _overduePayments = [];
     }
   }
 
@@ -216,15 +247,104 @@ class DashboardProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Test Firebase connectivity
+  Future<bool> testConnectivity() async {
+    try {
+      print('Testing Firebase connectivity...');
+      // Test if we can access Firestore
+      final test = await _firestoreService.db
+          .collection('customers')
+          .limit(1)
+          .get();
+      print(
+        'Firebase connectivity test successful. Found ${test.size} documents.',
+      );
+      return true;
+    } catch (e, stackTrace) {
+      print('Firebase connectivity test failed: $e');
+      print('Stack trace: $stackTrace');
+      return false;
+    }
+  }
+
+  // Test basic Firestore operations
+  Future<void> testFirestore() async {
+    try {
+      print('Testing basic Firestore operations...');
+
+      // Test 1: Check if we can count customers
+      print('Testing customer count...');
+      final customerCount = await _firestoreService.db
+          .collection('customers')
+          .count()
+          .get();
+      print('Customer count: ${customerCount.count}');
+
+      // Test 2: Check if we can get a list of customers
+      print('Testing customer list retrieval...');
+      final customers = await _firestoreService.db
+          .collection('customers')
+          .limit(5)
+          .get();
+      print('Retrieved ${customers.size} customer documents');
+
+      // Test 3: Check if we can get installment plans
+      print('Testing installment plans retrieval...');
+      final plans = await _firestoreService.db
+          .collection('installmentPlans')
+          .limit(5)
+          .get();
+      print('Retrieved ${plans.size} installment plan documents');
+
+      print('All Firestore tests completed successfully');
+
+      // Try to load dashboard stats now
+      await loadDashboardStats();
+    } catch (e, stackTrace) {
+      print('Firestore test failed: $e');
+      print('Stack trace: $stackTrace');
+
+      // Set a more specific error message
+      _setError('Unable to connect to database. Error: ${e.toString()}');
+    }
+  }
+
   // Check if there's an internet connection by attempting a simple Firestore operation
   Future<bool> checkConnection() async {
     try {
+      print('Checking Firestore connection...');
       // Try a simple count query to check connectivity
       await _firestoreService.db.collection('customers').limit(1).get();
+      print('Firestore connection successful');
       return true;
     } catch (e) {
       print('Connection check failed: $e');
       return false;
+    }
+  }
+
+  // Test Firebase configuration
+  Future<void> testFirebaseConfig() async {
+    try {
+      print('Testing Firebase configuration...');
+
+      // Check if Firebase is initialized
+      final instance = FirebaseFirestore.instance;
+      print('Firebase instance: $instance');
+
+      // Test basic connectivity
+      final test = await instance.collection('test').limit(1).get();
+      print(
+        'Basic connectivity test successful. Found ${test.size} documents.',
+      );
+
+      print('Firebase configuration test completed successfully');
+    } catch (e, stackTrace) {
+      print('Firebase configuration test failed: $e');
+      print('Stack trace: $stackTrace');
+
+      // Set a more specific error message
+      _setError('Firebase configuration error: ${e.toString()}');
     }
   }
 

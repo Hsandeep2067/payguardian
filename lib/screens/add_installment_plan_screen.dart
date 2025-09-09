@@ -28,6 +28,7 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
   final _numberOfInstallmentsController = TextEditingController();
 
   DateTime _startDate = DateTime.now();
+  DateTime? _dueDate; // Added due date variable
   bool _isLoading = false;
   double _balanceAmount = 0.0;
   double _installmentAmount = 0.0;
@@ -51,6 +52,7 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
     _advancePaidController.text = plan.advancePaid.toString();
     _numberOfInstallmentsController.text = plan.numberOfInstallments.toString();
     _startDate = plan.startDate;
+    _dueDate = plan.dueDate; // Populate due date
   }
 
   void _calculateAmounts() {
@@ -244,6 +246,25 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+
+              // Due date picker
+              InkWell(
+                onTap: _selectDueDate,
+                child: InputDecorator(
+                  decoration: const InputDecoration(
+                    labelText: 'Due Date (Optional)',
+                    prefixIcon: Icon(Icons.event),
+                    border: OutlineInputBorder(),
+                  ),
+                  child: Text(
+                    _dueDate != null
+                        ? DateFormat('MMM dd, yyyy').format(_dueDate!)
+                        : 'Select due date',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ),
+              ),
               const SizedBox(height: 24),
 
               // Calculation summary card
@@ -372,6 +393,21 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
     }
   }
 
+  // Added due date selection method
+  Future<void> _selectDueDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _dueDate ?? DateTime.now(),
+      firstDate: DateTime.now().subtract(const Duration(days: 30)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (picked != null) {
+      setState(() {
+        _dueDate = picked;
+      });
+    }
+  }
+
   Future<void> _submitForm() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -390,6 +426,7 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
         advancePaid: double.parse(_advancePaidController.text),
         numberOfInstallments: int.parse(_numberOfInstallmentsController.text),
         startDate: _startDate,
+        dueDate: _dueDate, // Added due date
       );
 
       final installmentProvider = context.read<InstallmentProvider>();

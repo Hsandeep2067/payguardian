@@ -12,6 +12,7 @@ class InstallmentPlan {
   final int numberOfInstallments;
   final double installmentAmount;
   final DateTime startDate;
+  final DateTime? dueDate; // Added due date field
   final InstallmentStatus status;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -26,6 +27,7 @@ class InstallmentPlan {
     required this.numberOfInstallments,
     required this.installmentAmount,
     required this.startDate,
+    this.dueDate, // Added due date parameter
     required this.status,
     required this.createdAt,
     required this.updatedAt,
@@ -42,6 +44,9 @@ class InstallmentPlan {
       'numberOfInstallments': numberOfInstallments,
       'installmentAmount': installmentAmount,
       'startDate': Timestamp.fromDate(startDate),
+      'dueDate': dueDate != null
+          ? Timestamp.fromDate(dueDate!)
+          : null, // Added due date to map
       'status': status.name,
       'createdAt': Timestamp.fromDate(createdAt),
       'updatedAt': Timestamp.fromDate(updatedAt),
@@ -60,6 +65,8 @@ class InstallmentPlan {
       numberOfInstallments: map['numberOfInstallments'] ?? 0,
       installmentAmount: (map['installmentAmount'] ?? 0).toDouble(),
       startDate: (map['startDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      dueDate: (map['dueDate'] as Timestamp?)
+          ?.toDate(), // Added due date from map
       status: InstallmentStatus.values.firstWhere(
         (e) => e.name == map['status'],
         orElse: () => InstallmentStatus.active,
@@ -78,6 +85,7 @@ class InstallmentPlan {
     required double advancePaid,
     required int numberOfInstallments,
     required DateTime startDate,
+    DateTime? dueDate, // Added due date parameter
     InstallmentStatus status = InstallmentStatus.active,
   }) {
     final balance = totalAmount - advancePaid;
@@ -96,6 +104,7 @@ class InstallmentPlan {
       numberOfInstallments: numberOfInstallments,
       installmentAmount: installmentValue,
       startDate: startDate,
+      dueDate: dueDate, // Added due date
       status: status,
       createdAt: now,
       updatedAt: now,
@@ -113,6 +122,7 @@ class InstallmentPlan {
     int? numberOfInstallments,
     double? installmentAmount,
     DateTime? startDate,
+    DateTime? dueDate, // Added due date parameter
     InstallmentStatus? status,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -127,6 +137,7 @@ class InstallmentPlan {
       numberOfInstallments: numberOfInstallments ?? this.numberOfInstallments,
       installmentAmount: installmentAmount ?? this.installmentAmount,
       startDate: startDate ?? this.startDate,
+      dueDate: dueDate ?? this.dueDate, // Added due date
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
