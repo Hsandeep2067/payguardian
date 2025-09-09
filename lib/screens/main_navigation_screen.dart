@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/installment_provider.dart';
 import 'dashboard_screen.dart';
 import 'customers_screen.dart';
+import '../constants/app_colors.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -31,8 +32,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Colors.grey,
+        backgroundColor: AppColors.cardBackground,
+        selectedItemColor: AppColors.accent,
+        unselectedItemColor: AppColors.iconPrimary,
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),
