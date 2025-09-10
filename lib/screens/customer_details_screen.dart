@@ -890,6 +890,13 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
             fontSize: 12,
           ),
         ),
+        onTap: payment.status == PaymentStatus.paid
+            ? null
+            : () => _markPaymentAsPaid(
+                payment,
+              ), // Add onTap handler for pending payments
+        enabled:
+            payment.status != PaymentStatus.paid, // Disable for paid payments
       ),
     );
   }
@@ -898,14 +905,23 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Mark Payment as Paid'),
+        title: Text(
+          'Mark Payment as Paid',
+          style: TextStyle(color: AppColors.textPrimary),
+        ),
         content: Text(
           'Mark payment of ${NumberFormat.currency(symbol: 'Rs. ', decimalDigits: 0).format(payment.amount)} as paid?',
+          style: TextStyle(color: AppColors.textPrimary),
         ),
+        backgroundColor: AppColors.cardBackground,
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: AppColors.textPrimary),
+            ),
+            style: TextButton.styleFrom(foregroundColor: AppColors.textPrimary),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -919,14 +935,26 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
                   SnackBar(
                     content: Text(
                       success
-                          ? 'Payment marked as paid'
+                          ? 'Payment marked as paid successfully'
                           : 'Failed to update payment',
                     ),
-                    backgroundColor: success ? Colors.green : Colors.red,
+                    backgroundColor: success
+                        ? AppColors.success
+                        : AppColors.error,
                   ),
                 );
+
+                // Refresh data after marking payment as paid
+                if (success) {
+                  _loadInstallmentData();
+                  context.read<DashboardProvider>().refreshDashboard();
+                }
               }
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.buttonBackground,
+              foregroundColor: AppColors.buttonText,
+            ),
             child: const Text('Mark as Paid'),
           ),
         ],
