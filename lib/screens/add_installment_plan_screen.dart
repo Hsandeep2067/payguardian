@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../providers/installment_provider.dart';
 import '../models/customer.dart';
 import '../models/installment_plan.dart';
+import '../constants/app_colors.dart'; // Add this import
 
 class AddInstallmentPlanScreen extends StatefulWidget {
   final Customer customer;
@@ -81,11 +82,14 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background, // Use theme background
       appBar: AppBar(
         title: Text(
           _isEditing ? 'Edit Installment Plan' : 'Add Installment Plan',
+          style: const TextStyle(color: AppColors.textPrimary),
         ),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: AppColors.cardBackground, // Use theme card background
+        foregroundColor: AppColors.textPrimary, // Use theme text color
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -96,18 +100,21 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
             children: [
               // Customer info card
               Card(
+                color: AppColors.cardBackground, // Use theme card background
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Row(
                     children: [
                       CircleAvatar(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        backgroundColor:
+                            AppColors.primary, // Use theme primary color
                         child: Text(
                           widget.customer.name.isNotEmpty
                               ? widget.customer.name[0].toUpperCase()
                               : 'C',
                           style: const TextStyle(
-                            color: Colors.white,
+                            color: AppColors
+                                .buttonText, // Use theme button text color
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -119,11 +126,19 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
                           children: [
                             Text(
                               widget.customer.name,
-                              style: Theme.of(context).textTheme.titleMedium,
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(
+                                    color: AppColors
+                                        .textPrimary, // Use theme text color
+                                  ),
                             ),
                             Text(
                               widget.customer.phone,
-                              style: Theme.of(context).textTheme.bodyMedium,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    color: AppColors
+                                        .textPrimary, // Use theme text color
+                                  ),
                             ),
                           ],
                         ),
@@ -137,13 +152,23 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
               // Item field
               TextFormField(
                 controller: _itemController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Item/Product *',
                   hintText: 'Enter item or product name',
-                  prefixIcon: Icon(Icons.shopping_cart),
-                  border: OutlineInputBorder(),
+                  prefixIcon: const Icon(
+                    Icons.shopping_cart,
+                    color: AppColors.iconPrimary,
+                  ),
+                  border: const OutlineInputBorder(),
+                  labelStyle: const TextStyle(color: AppColors.textPrimary),
+                  hintStyle: TextStyle(
+                    color: AppColors.textPrimary.withOpacity(0.6),
+                  ),
                 ),
                 textCapitalization: TextCapitalization.words,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                ), // Use theme text color
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Item is required';
@@ -156,13 +181,23 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
               // Total amount field
               TextFormField(
                 controller: _totalAmountController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Total Amount (Rs.) *',
                   hintText: 'Enter total amount',
-                  prefixIcon: Icon(Icons.attach_money),
-                  border: OutlineInputBorder(),
+                  prefixIcon: const Icon(
+                    Icons.attach_money,
+                    color: AppColors.iconPrimary,
+                  ),
+                  border: const OutlineInputBorder(),
+                  labelStyle: const TextStyle(color: AppColors.textPrimary),
+                  hintStyle: TextStyle(
+                    color: AppColors.textPrimary.withOpacity(0.6),
+                  ),
                 ),
                 keyboardType: TextInputType.number,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                ), // Use theme text color
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Total amount is required';
@@ -180,13 +215,23 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
               // Advance paid field
               TextFormField(
                 controller: _advancePaidController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Advance Paid (Rs.)',
                   hintText: 'Enter advance amount paid',
-                  prefixIcon: Icon(Icons.payment),
-                  border: OutlineInputBorder(),
+                  prefixIcon: const Icon(
+                    Icons.payment,
+                    color: AppColors.iconPrimary,
+                  ),
+                  border: const OutlineInputBorder(),
+                  labelStyle: const TextStyle(color: AppColors.textPrimary),
+                  hintStyle: TextStyle(
+                    color: AppColors.textPrimary.withOpacity(0.6),
+                  ),
                 ),
                 keyboardType: TextInputType.number,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                ), // Use theme text color
                 validator: (value) {
                   final totalAmount =
                       double.tryParse(_totalAmountController.text) ?? 0.0;
@@ -207,13 +252,23 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
               // Number of installments field
               TextFormField(
                 controller: _numberOfInstallmentsController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Number of Installments *',
                   hintText: 'Enter number of installments',
-                  prefixIcon: Icon(Icons.format_list_numbered),
-                  border: OutlineInputBorder(),
+                  prefixIcon: const Icon(
+                    Icons.format_list_numbered,
+                    color: AppColors.iconPrimary,
+                  ),
+                  border: const OutlineInputBorder(),
+                  labelStyle: const TextStyle(color: AppColors.textPrimary),
+                  hintStyle: TextStyle(
+                    color: AppColors.textPrimary.withOpacity(0.6),
+                  ),
                 ),
                 keyboardType: TextInputType.number,
+                style: const TextStyle(
+                  color: AppColors.textPrimary,
+                ), // Use theme text color
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Number of installments is required';
@@ -235,14 +290,20 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
               InkWell(
                 onTap: _selectStartDate,
                 child: InputDecorator(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Start Date *',
-                    prefixIcon: Icon(Icons.calendar_today),
-                    border: OutlineInputBorder(),
+                    prefixIcon: const Icon(
+                      Icons.calendar_today,
+                      color: AppColors.iconPrimary,
+                    ),
+                    border: const OutlineInputBorder(),
+                    labelStyle: const TextStyle(color: AppColors.textPrimary),
                   ),
                   child: Text(
                     DateFormat('MMM dd, yyyy').format(_startDate),
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: AppColors.textPrimary, // Use theme text color
+                    ),
                   ),
                 ),
               ),
@@ -252,16 +313,22 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
               InkWell(
                 onTap: _selectDueDate,
                 child: InputDecorator(
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Due Date (Optional)',
-                    prefixIcon: Icon(Icons.event),
-                    border: OutlineInputBorder(),
+                    prefixIcon: const Icon(
+                      Icons.event,
+                      color: AppColors.iconPrimary,
+                    ),
+                    border: const OutlineInputBorder(),
+                    labelStyle: const TextStyle(color: AppColors.textPrimary),
                   ),
                   child: Text(
                     _dueDate != null
                         ? DateFormat('MMM dd, yyyy').format(_dueDate!)
                         : 'Select due date',
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: AppColors.textPrimary, // Use theme text color
+                    ),
                   ),
                 ),
               ),
@@ -269,7 +336,7 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
 
               // Calculation summary card
               Card(
-                color: Colors.blue.shade50,
+                color: AppColors.cardBackground, // Use theme card background
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -279,7 +346,8 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
                         'Calculation Summary',
                         style: Theme.of(context).textTheme.titleMedium
                             ?.copyWith(
-                              color: Colors.blue.shade700,
+                              color:
+                                  AppColors.textPrimary, // Use theme text color
                               fontWeight: FontWeight.bold,
                             ),
                       ),
@@ -300,12 +368,14 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
                         'Balance Amount:',
                         'Rs. ${NumberFormat('#,##0').format(_balanceAmount)}',
                       ),
-                      const Divider(),
+                      const Divider(
+                        color: AppColors.iconPrimary,
+                      ), // Use theme icon color
                       _buildSummaryRow(
                         'Per Installment:',
                         'Rs. ${NumberFormat('#,##0').format(_installmentAmount)}',
                         isBold: true,
-                        color: Colors.blue.shade700,
+                        color: AppColors.primary, // Use theme primary color
                       ),
                     ],
                   ),
@@ -321,6 +391,10 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
+                  backgroundColor:
+                      AppColors.buttonBackground, // Use theme button background
+                  foregroundColor:
+                      AppColors.buttonText, // Use theme button text
                 ),
                 child: Text(
                   _isLoading
@@ -339,6 +413,11 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
+                  side: const BorderSide(
+                    color: AppColors.primary,
+                  ), // Use theme primary color
+                  foregroundColor:
+                      AppColors.textPrimary, // Use theme text color
                 ),
                 child: const Text('Cancel', style: TextStyle(fontSize: 16)),
               ),
@@ -364,14 +443,14 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
             label,
             style: TextStyle(
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: color,
+              color: color ?? AppColors.textPrimary, // Use theme text color
             ),
           ),
           Text(
             value,
             style: TextStyle(
               fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-              color: color,
+              color: color ?? AppColors.textPrimary, // Use theme text color
             ),
           ),
         ],
@@ -385,6 +464,24 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
       initialDate: _startDate,
       firstDate: DateTime.now().subtract(const Duration(days: 30)),
       lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: AppColors.primary,
+              onPrimary: AppColors.buttonText,
+              surface: AppColors.cardBackground,
+              onSurface: AppColors.textPrimary,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.textPrimary,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null && picked != _startDate) {
       setState(() {
@@ -400,6 +497,24 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
       initialDate: _dueDate ?? DateTime.now(),
       firstDate: DateTime.now().subtract(const Duration(days: 30)),
       lastDate: DateTime.now().add(const Duration(days: 365)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: AppColors.primary,
+              onPrimary: AppColors.buttonText,
+              surface: AppColors.cardBackground,
+              onSurface: AppColors.textPrimary,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.textPrimary,
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (picked != null) {
       setState(() {
@@ -450,7 +565,7 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
                     ? 'Installment plan updated successfully'
                     : 'Installment plan created successfully',
               ),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.success,
             ),
           );
         } else {
@@ -459,7 +574,10 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
               'Failed to ${_isEditing ? 'update' : 'create'} installment plan';
 
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: AppColors.error,
+            ),
           );
         }
       }
@@ -468,7 +586,7 @@ class _AddInstallmentPlanScreenState extends State<AddInstallmentPlanScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('An error occurred: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }
