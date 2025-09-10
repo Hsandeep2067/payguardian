@@ -314,6 +314,32 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
                           ),
                         ],
                       ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildSummaryCard(
+                              'Advanced Paid',
+                              NumberFormat.currency(
+                                symbol: 'Rs. ',
+                                decimalDigits: 0,
+                              ).format(
+                                installmentProvider
+                                    .getTotalAdvancedPaidAmountForCustomer(
+                                      widget.customerId,
+                                    ),
+                              ),
+                              Colors.blue,
+                              Icons.payment,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child:
+                                Container(), // Empty container to maintain layout
+                          ),
+                        ],
+                      ),
                       if (nextPayment != null) ...[
                         const SizedBox(height: 16),
                         Container(

@@ -223,6 +223,49 @@ class InstallmentProvider extends ChangeNotifier {
         .fold(0.0, (sum, payment) => sum + payment.amount);
   }
 
+  // Calculate total advanced paid amount for customer
+  double getTotalAdvancedPaidAmountForCustomer(String customerId) {
+    // Get all paid payments for the customer
+    final paidPayments = _payments
+        .where(
+          (payment) =>
+              payment.customerId == customerId &&
+              payment.status == PaymentStatus.paid,
+        )
+        .toList();
+
+    if (paidPayments.isEmpty) return 0.0;
+
+    // Get all installment plans for the customer
+    final customerPlans = _installmentPlans
+        .where((plan) => plan.customerId == customerId)
+        .toList();
+
+    if (customerPlans.isEmpty) return 0.0;
+
+    double advancedPaidAmount = 0.0;
+
+    // For each paid payment, check if it's an advanced payment
+    for (var payment in paidPayments) {
+      // Find the corresponding installment plan
+      final plan = customerPlans.firstWhere(
+        (p) => p.id == payment.installmentPlanId,
+        orElse: () => customerPlans.first,
+      );
+
+      // If the payment was made before the first installment due date, it's an advanced payment
+      // Or if the payment installment number is 0 (indicating advance payment)
+      if (payment.installmentNumber == 0 ||
+          (payment.paidDate != null &&
+              plan.startDate != null &&
+              payment.paidDate!.isBefore(plan.startDate!))) {
+        advancedPaidAmount += payment.amount;
+      }
+    }
+
+    return advancedPaidAmount;
+  }
+
   // Get next payment due for customer
   Payment? getNextPaymentDueForCustomer(String customerId) {
     final pendingPayments = _payments
