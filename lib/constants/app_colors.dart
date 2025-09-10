@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 /// Following the dark theme color scheme:
 /// - Text: #FFFFFF (White) - Used only for text
 /// - Icons: #94a3b8 (Slate gray) - For icons and secondary elements
-/// - Primary background: #0b0b0b (Almost black)
+/// - Primary background: #000000 (Black)
 /// - Card background: #040015 (Deep navy)
 /// - Accent color: #2563eb (Blue for interactive elements)
 
@@ -18,7 +18,7 @@ class AppColors {
   static const Color iconSecondary = Color(0xFF94a3b8); // Slate gray
 
   // Background colors
-  static const Color background = Color(0xFF0b0b0b); // Almost black
+  static const Color background = Color(0xFF000000); // Black
   static const Color cardBackground = Color(0xFF040015); // Deep navy
 
   // Accent colors (for interactive elements, buttons, etc.)

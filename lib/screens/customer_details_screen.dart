@@ -9,6 +9,7 @@ import '../models/installment_plan.dart';
 import '../models/payment.dart';
 import 'add_customer_screen.dart';
 import 'add_installment_plan_screen.dart';
+import '../constants/app_colors.dart';
 
 class CustomerDetailsScreen extends StatefulWidget {
   final String customerId;
@@ -69,6 +70,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
+        backgroundColor: AppColors.background,
         appBar: AppBar(title: const Text('Customer Details')),
         body: const Center(child: CircularProgressIndicator()),
       );
@@ -76,18 +78,21 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
 
     if (_customer == null) {
       return Scaffold(
+        backgroundColor: AppColors.background,
         appBar: AppBar(title: const Text('Customer Details')),
         body: const Center(child: Text('Customer not found')),
       );
     }
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(_customer!.name),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: AppColors.cardBackground,
+        foregroundColor: AppColors.textPrimary,
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit),
+            icon: Icon(Icons.edit, color: AppColors.iconPrimary),
             onPressed: () {
               Navigator.push(
                 context,
@@ -100,11 +105,23 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
         ],
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.person), text: 'Info'),
-            Tab(icon: Icon(Icons.assignment), text: 'Plans'),
-            Tab(icon: Icon(Icons.payment), text: 'Payments'),
+          tabs: [
+            Tab(
+              icon: Icon(Icons.person, color: AppColors.iconPrimary),
+              text: 'Info',
+            ),
+            Tab(
+              icon: Icon(Icons.assignment, color: AppColors.iconPrimary),
+              text: 'Plans',
+            ),
+            Tab(
+              icon: Icon(Icons.payment, color: AppColors.iconPrimary),
+              text: 'Payments',
+            ),
           ],
+          indicatorColor: AppColors.accent,
+          labelColor: AppColors.textPrimary,
+          unselectedLabelColor: AppColors.iconPrimary,
         ),
       ),
       body: TabBarView(
@@ -144,13 +161,14 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
         children: [
           // Customer avatar and basic info
           Card(
+            color: AppColors.cardBackground,
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
                   CircleAvatar(
                     radius: 30,
-                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    backgroundColor: AppColors.primary,
                     child: Text(
                       _customer!.name.isNotEmpty
                           ? _customer!.name[0].toUpperCase()
@@ -169,12 +187,14 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
                       children: [
                         Text(
                           _customer!.name,
-                          style: Theme.of(context).textTheme.headlineSmall,
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(color: AppColors.textPrimary),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           'Customer since ${DateFormat('MMM yyyy').format(_customer!.createdAt)}',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.textPrimary),
                         ),
                       ],
                     ),
@@ -187,6 +207,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
 
           // Contact information
           Card(
+            color: AppColors.cardBackground,
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -194,7 +215,9 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
                 children: [
                   Text(
                     'Contact Information',
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   _buildInfoRow(Icons.phone, 'Phone', _customer!.phone),
@@ -215,6 +238,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
           // Additional information
           if (_customer!.notes.isNotEmpty) ...[
             Card(
+              color: AppColors.cardBackground,
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -222,12 +246,16 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
                   children: [
                     Text(
                       'Notes',
-                      style: Theme.of(context).textTheme.titleMedium,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       _customer!.notes,
-                      style: Theme.of(context).textTheme.bodyMedium,
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
                     ),
                   ],
                 ),
@@ -247,6 +275,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
                   .getNextPaymentDueForCustomer(widget.customerId);
 
               return Card(
+                color: AppColors.cardBackground,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -254,7 +283,8 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
                     children: [
                       Text(
                         'Financial Summary',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(color: AppColors.textPrimary),
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -290,8 +320,8 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: nextPayment.isOverdue
-                                ? Colors.red.shade50
-                                : Colors.blue.shade50,
+                                ? Colors.red.withOpacity(0.1)
+                                : Colors.blue.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
                               color: nextPayment.isOverdue
@@ -328,6 +358,9 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
                                     ),
                                     Text(
                                       '${NumberFormat.currency(symbol: 'Rs. ', decimalDigits: 0).format(nextPayment.amount)} due on ${DateFormat('MMM dd, yyyy').format(nextPayment.dueDate)}',
+                                      style: TextStyle(
+                                        color: AppColors.textPrimary,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -352,13 +385,16 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
       builder: (context, installmentProvider, child) {
         // Show loading state
         if (installmentProvider.isLoading) {
-          return const Center(
+          return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                CircularProgressIndicator(),
-                SizedBox(height: 16),
-                Text('Loading installment plans...'),
+                const CircularProgressIndicator(color: Colors.white),
+                const SizedBox(height: 16),
+                Text(
+                  'Loading installment plans...',
+                  style: TextStyle(color: AppColors.textPrimary),
+                ),
               ],
             ),
           );
@@ -370,20 +406,20 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  Icons.error_outline,
-                  size: 64,
-                  color: Theme.of(context).colorScheme.error,
-                ),
+                Icon(Icons.error_outline, size: 64, color: AppColors.error),
                 const SizedBox(height: 16),
                 Text(
                   'Error loading plans',
-                  style: Theme.of(context).textTheme.headlineSmall,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   installmentProvider.error!,
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
@@ -391,6 +427,10 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
                   onPressed: () {
                     _loadInstallmentData();
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.buttonBackground,
+                    foregroundColor: AppColors.buttonText,
+                  ),
                   child: const Text('Retry'),
                 ),
               ],
@@ -408,61 +448,55 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
 
         // Show empty state
         if (plans.isEmpty) {
-          return RefreshIndicator(
-            onRefresh: () async {
-              _loadInstallmentData();
-            },
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.6,
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.assignment_outlined,
-                        size: 64,
-                        color: Colors.grey,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No installment plans',
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Create an installment plan to get started',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AddInstallmentPlanScreen(
-                                customer: _customer!,
-                              ),
-                            ),
-                          ).then((_) {
-                            // Refresh data when returning from add screen
-                            _loadInstallmentData();
-                          });
-                        },
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add Installment Plan'),
-                      ),
-                    ],
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.assignment_outlined,
+                  size: 64,
+                  color: AppColors.iconPrimary,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'No installment plans yet',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
                   ),
                 ),
-              ),
+                const SizedBox(height: 8),
+                Text(
+                  'Create an installment plan for this customer',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            AddInstallmentPlanScreen(customer: _customer!),
+                      ),
+                    ).then((_) {
+                      _loadInstallmentData();
+                      context.read<DashboardProvider>().refreshDashboard();
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.buttonBackground,
+                    foregroundColor: AppColors.buttonText,
+                  ),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add Plan'),
+                ),
+              ],
             ),
           );
         }
 
-        // Show plans list with refresh capability
         return RefreshIndicator(
           onRefresh: () async {
             _loadInstallmentData();
@@ -472,7 +506,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
             itemCount: plans.length,
             itemBuilder: (context, index) {
               final plan = plans[index];
-              return _buildInstallmentPlanCard(plan);
+              return _buildInstallmentPlanCard(context, plan);
             },
           ),
         );
@@ -483,80 +517,91 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
   Widget _buildPaymentsTab() {
     return Consumer<InstallmentProvider>(
       builder: (context, installmentProvider, child) {
-        final payments = installmentProvider.customerPayments;
-
-        if (payments.isEmpty) {
+        if (installmentProvider.isLoading) {
           return const Center(
+            child: CircularProgressIndicator(color: Colors.white),
+          );
+        }
+
+        if (installmentProvider.error != null) {
+          return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.payment, size: 64, color: Colors.grey),
-                SizedBox(height: 16),
-                Text('No payments found', style: TextStyle(fontSize: 18)),
-                SizedBox(height: 8),
+                Icon(Icons.error_outline, size: 64, color: AppColors.error),
+                const SizedBox(height: 16),
                 Text(
-                  'Payments will appear here once installment plans are created',
+                  'Error loading payments',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  installmentProvider.error!,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    _loadInstallmentData();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.buttonBackground,
+                    foregroundColor: AppColors.buttonText,
+                  ),
+                  child: const Text('Retry'),
                 ),
               ],
             ),
           );
         }
 
-        // Group payments by status
-        final pendingPayments = payments
-            .where((p) => p.status == PaymentStatus.pending)
-            .toList();
-        final paidPayments = payments
-            .where((p) => p.status == PaymentStatus.paid)
-            .toList();
-        final overduePayments = payments.where((p) => p.isOverdue).toList();
+        final payments = installmentProvider.customerPayments;
 
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (overduePayments.isNotEmpty) ...[
-                Text(
-                  'Overdue Payments',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleMedium?.copyWith(color: Colors.red),
-                ),
-                const SizedBox(height: 8),
-                ...overduePayments.map(
-                  (payment) => _buildPaymentCard(payment, isOverdue: true),
+        if (payments.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.payment_outlined,
+                  size: 64,
+                  color: AppColors.iconPrimary,
                 ),
                 const SizedBox(height: 16),
-              ],
-
-              if (pendingPayments.isNotEmpty) ...[
                 Text(
-                  'Pending Payments',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleMedium?.copyWith(color: Colors.orange),
+                  'No payments yet',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
                 ),
                 const SizedBox(height: 8),
-                ...pendingPayments
-                    .where((p) => !p.isOverdue)
-                    .map((payment) => _buildPaymentCard(payment)),
-                const SizedBox(height: 16),
-              ],
-
-              if (paidPayments.isNotEmpty) ...[
                 Text(
-                  'Paid Payments',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleMedium?.copyWith(color: Colors.green),
-                ),
-                const SizedBox(height: 8),
-                ...paidPayments.map(
-                  (payment) => _buildPaymentCard(payment, isPaid: true),
+                  'Payments will appear here once received',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textPrimary,
+                  ),
                 ),
               ],
-            ],
+            ),
+          );
+        }
+
+        return RefreshIndicator(
+          onRefresh: () async {
+            _loadInstallmentData();
+          },
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: payments.length,
+            itemBuilder: (context, index) {
+              final payment = payments[index];
+              return _buildPaymentCard(context, payment);
+            },
           ),
         );
       },
@@ -565,12 +610,30 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 20, color: Colors.grey[600]),
+        Icon(icon, size: 18, color: AppColors.iconPrimary),
         const SizedBox(width: 12),
-        Text('$label: ', style: const TextStyle(fontWeight: FontWeight.w500)),
         Expanded(
-          child: Text(value, style: const TextStyle(color: Colors.black87)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: AppColors.textPrimary.withOpacity(0.7),
+                ),
+              ),
+              Text(
+                value,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -582,58 +645,57 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
     Color color,
     IconData icon,
   ) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 12,
-              color: color,
-              fontWeight: FontWeight.w500,
+    return Card(
+      color: AppColors.cardBackground,
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: color, size: 18),
+                const SizedBox(width: 8),
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 14, color: AppColors.textPrimary),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: color,
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildInstallmentPlanCard(InstallmentPlan plan) {
-    Color statusColor;
-    switch (plan.status) {
-      case InstallmentStatus.active:
-        statusColor = Colors.blue;
-        break;
-      case InstallmentStatus.completed:
-        statusColor = Colors.green;
-        break;
-      case InstallmentStatus.overdue:
-        statusColor = Colors.red;
-        break;
-      case InstallmentStatus.cancelled:
-        statusColor = Colors.grey;
-        break;
+  Widget _buildInstallmentPlanCard(BuildContext context, InstallmentPlan plan) {
+    // Calculate progress based on the plan status
+    double progress = 0.0;
+    if (plan.status == InstallmentStatus.completed) {
+      progress = 1.0;
+    } else if (plan.status == InstallmentStatus.active) {
+      // For active plans, we could calculate progress based on payments
+      // For now, we'll use a simple calculation
+      progress = 0.5;
     }
 
+    bool isActive = plan.status == InstallmentStatus.active;
+
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      color: AppColors.cardBackground,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: AppColors.border.withOpacity(0.3), width: 1),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -645,9 +707,9 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
                 Expanded(
                   child: Text(
                     plan.item,
-                    style: const TextStyle(
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: AppColors.textPrimary,
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
                     ),
                   ),
                 ),
@@ -657,68 +719,74 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
+                    color: isActive
+                        ? Colors.green.withOpacity(0.2)
+                        : Colors.red.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: statusColor.withOpacity(0.3)),
                   ),
                   child: Text(
-                    plan.status.name.toUpperCase(),
+                    isActive ? 'Active' : 'Completed',
                     style: TextStyle(
-                      color: statusColor,
-                      fontSize: 10,
+                      color: isActive ? Colors.green : Colors.red,
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
             Row(
               children: [
-                Expanded(
-                  child: _buildPlanDetailItem(
-                    'Total Amount',
-                    NumberFormat.currency(
-                      symbol: 'Rs. ',
-                      decimalDigits: 0,
-                    ).format(plan.totalAmount),
-                  ),
+                Icon(
+                  Icons.account_balance,
+                  size: 16,
+                  color: AppColors.iconPrimary,
                 ),
-                Expanded(
-                  child: _buildPlanDetailItem(
-                    'Advance Paid',
-                    NumberFormat.currency(
-                      symbol: 'Rs. ',
-                      decimalDigits: 0,
-                    ).format(plan.advancePaid),
-                  ),
+                const SizedBox(width: 8),
+                Text(
+                  NumberFormat.currency(
+                    symbol: 'Rs. ',
+                    decimalDigits: 0,
+                  ).format(plan.totalAmount),
+                  style: TextStyle(color: AppColors.textPrimary),
+                ),
+                const SizedBox(width: 16),
+                Icon(Icons.event, size: 16, color: AppColors.iconPrimary),
+                const SizedBox(width: 8),
+                Text(
+                  '${plan.numberOfInstallments} months',
+                  style: TextStyle(color: AppColors.textPrimary),
                 ),
               ],
             ),
             const SizedBox(height: 8),
+            LinearProgressIndicator(
+              value: progress,
+              backgroundColor: AppColors.border,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                progress == 1.0 ? Colors.green : AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: 8),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: _buildPlanDetailItem(
-                    'Installments',
-                    '${plan.numberOfInstallments} payments',
+                Text(
+                  '${(progress * 100).toStringAsFixed(0)}% completed',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textPrimary.withOpacity(0.7),
                   ),
                 ),
-                Expanded(
-                  child: _buildPlanDetailItem(
-                    'Per Installment',
-                    NumberFormat.currency(
-                      symbol: 'Rs. ',
-                      decimalDigits: 0,
-                    ).format(plan.installmentAmount),
+                Text(
+                  '${plan.numberOfInstallments}/${plan.numberOfInstallments} paid',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textPrimary.withOpacity(0.7),
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 8),
-            _buildPlanDetailItem(
-              'Start Date',
-              DateFormat('MMM dd, yyyy').format(plan.startDate),
             ),
           ],
         ),
@@ -746,27 +814,36 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
     );
   }
 
-  Widget _buildPaymentCard(
-    Payment payment, {
-    bool isOverdue = false,
-    bool isPaid = false,
-  }) {
+  Widget _buildPaymentCard(BuildContext context, Payment payment) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      color: isOverdue
-          ? Colors.red.shade50
-          : (isPaid ? Colors.green.shade50 : null),
+      color: AppColors.cardBackground,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: AppColors.border.withOpacity(0.3), width: 1),
+      ),
       child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: isOverdue
-              ? Colors.red
-              : (isPaid ? Colors.green : Colors.orange),
-          child: Text(
-            payment.installmentNumber.toString(),
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+        contentPadding: const EdgeInsets.all(16),
+        leading: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: payment.isOverdue
+                ? Colors.red.withOpacity(0.2)
+                : payment.status == PaymentStatus.paid
+                ? Colors.green.withOpacity(0.2)
+                : Colors.orange.withOpacity(0.2),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            payment.isOverdue
+                ? Icons.warning
+                : payment.status == PaymentStatus.paid
+                ? Icons.check_circle
+                : Icons.schedule,
+            color: payment.isOverdue
+                ? Colors.red
+                : payment.status == PaymentStatus.paid
+                ? Colors.green
+                : Colors.orange,
           ),
         ),
         title: Text(
@@ -774,26 +851,45 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
             symbol: 'Rs. ',
             decimalDigits: 0,
           ).format(payment.amount),
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Due: ${DateFormat('MMM dd, yyyy').format(payment.dueDate)}'),
-            if (isPaid && payment.paidDate != null)
-              Text(
-                'Paid: ${DateFormat('MMM dd, yyyy').format(payment.paidDate!)}',
+            Text(
+              'Due: ${DateFormat('MMM dd, yyyy').format(payment.dueDate)}',
+              style: TextStyle(
+                color: AppColors.textPrimary.withOpacity(0.7),
+                fontSize: 12,
               ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              payment.status.toString().split('.').last.toUpperCase(),
+              style: TextStyle(
+                color: payment.isOverdue
+                    ? Colors.red
+                    : payment.status == PaymentStatus.paid
+                    ? Colors.green
+                    : Colors.orange,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
-        trailing: isPaid
-            ? const Icon(Icons.check_circle, color: Colors.green)
-            : (isOverdue
-                  ? const Icon(Icons.warning, color: Colors.red)
-                  : IconButton(
-                      icon: const Icon(Icons.payment),
-                      onPressed: () => _markPaymentAsPaid(payment),
-                    )),
+        trailing: Text(
+          DateFormat(
+            'MMM dd, yyyy',
+          ).format(payment.paidDate ?? payment.dueDate),
+          style: TextStyle(
+            color: AppColors.textPrimary.withOpacity(0.7),
+            fontSize: 12,
+          ),
+        ),
       ),
     );
   }

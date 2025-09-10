@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../providers/customer_provider.dart';
 import '../providers/dashboard_provider.dart';
 import '../models/customer.dart';
+import '../constants/app_colors.dart';
 
 class AddCustomerScreen extends StatefulWidget {
   final Customer? customer; // For editing existing customer
@@ -71,17 +72,22 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(_isEditing ? 'Edit Customer' : 'Add Customer'),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: AppColors.cardBackground,
+        foregroundColor: AppColors.textPrimary,
         actions: [
           if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.all(16.0),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
               child: SizedBox(
                 width: 20,
                 height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: AppColors.textPrimary,
+                ),
               ),
             ),
         ],
@@ -98,28 +104,31 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
 
               // Header card
               Card(
+                color: AppColors.cardBackground,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     children: [
                       Icon(
-                        _isEditing ? Icons.person_add : Icons.person_add,
+                        _isEditing ? Icons.person : Icons.person_add,
                         size: 48,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: AppColors.primary,
                       ),
                       const SizedBox(height: 16),
                       Text(
                         _isEditing
                             ? 'Update customer information'
                             : 'Add New Customer to Grow Your Business',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(color: AppColors.textPrimary),
                         textAlign: TextAlign.center,
                       ),
                       if (!_isEditing) ...[
                         const SizedBox(height: 8),
                         Text(
                           'Each new customer increases your business potential',
-                          style: Theme.of(context).textTheme.bodySmall,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AppColors.textPrimary),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -132,12 +141,29 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               // Name field
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Full Name *',
                   hintText: 'Enter customer\'s full name',
-                  prefixIcon: Icon(Icons.person),
-                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.person, color: AppColors.iconPrimary),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.accent, width: 2),
+                  ),
+                  filled: true,
+                  fillColor: AppColors.cardBackground,
+                  labelStyle: TextStyle(color: AppColors.textPrimary),
+                  hintStyle: TextStyle(
+                    color: AppColors.textPrimary.withOpacity(0.7),
+                  ),
                 ),
+                style: TextStyle(color: AppColors.textPrimary),
                 textCapitalization: TextCapitalization.words,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -160,12 +186,29 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               // Phone field
               TextFormField(
                 controller: _phoneController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Phone Number *',
                   hintText: 'Enter phone number',
-                  prefixIcon: Icon(Icons.phone),
-                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(Icons.phone, color: AppColors.iconPrimary),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.accent, width: 2),
+                  ),
+                  filled: true,
+                  fillColor: AppColors.cardBackground,
+                  labelStyle: TextStyle(color: AppColors.textPrimary),
+                  hintStyle: TextStyle(
+                    color: AppColors.textPrimary.withOpacity(0.7),
+                  ),
                 ),
+                style: TextStyle(color: AppColors.textPrimary),
                 keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -182,12 +225,32 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               // NIC field
               TextFormField(
                 controller: _nicController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'NIC Number *',
                   hintText: 'Enter NIC number',
-                  prefixIcon: Icon(Icons.credit_card),
-                  border: OutlineInputBorder(),
+                  prefixIcon: Icon(
+                    Icons.credit_card,
+                    color: AppColors.iconPrimary,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.accent, width: 2),
+                  ),
+                  filled: true,
+                  fillColor: AppColors.cardBackground,
+                  labelStyle: TextStyle(color: AppColors.textPrimary),
+                  hintStyle: TextStyle(
+                    color: AppColors.textPrimary.withOpacity(0.7),
+                  ),
                 ),
+                style: TextStyle(color: AppColors.textPrimary),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'NIC number is required';
@@ -203,185 +266,118 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               // Address field
               TextFormField(
                 controller: _addressController,
-                decoration: const InputDecoration(
-                  labelText: 'Address *',
-                  hintText: 'Enter full address',
-                  prefixIcon: Icon(Icons.location_on),
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: 'Address',
+                  hintText: 'Enter customer address',
+                  prefixIcon: Icon(
+                    Icons.location_on,
+                    color: AppColors.iconPrimary,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.accent, width: 2),
+                  ),
+                  filled: true,
+                  fillColor: AppColors.cardBackground,
+                  labelStyle: TextStyle(color: AppColors.textPrimary),
+                  hintStyle: TextStyle(
+                    color: AppColors.textPrimary.withOpacity(0.7),
+                  ),
                 ),
-                maxLines: 3,
+                style: TextStyle(color: AppColors.textPrimary),
                 textCapitalization: TextCapitalization.sentences,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Address is required';
-                  }
-                  return null;
-                },
+                maxLines: 3,
               ),
               const SizedBox(height: 16),
 
               // Notes field
               TextFormField(
                 controller: _notesController,
-                decoration: const InputDecoration(
-                  labelText: 'Notes (Optional)',
-                  hintText: 'Additional information about the customer',
-                  prefixIcon: Icon(Icons.note),
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: 'Notes',
+                  hintText: 'Additional notes about the customer',
+                  prefixIcon: Icon(Icons.note, color: AppColors.iconPrimary),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.border),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColors.accent, width: 2),
+                  ),
+                  filled: true,
+                  fillColor: AppColors.cardBackground,
+                  labelStyle: TextStyle(color: AppColors.textPrimary),
+                  hintStyle: TextStyle(
+                    color: AppColors.textPrimary.withOpacity(0.7),
+                  ),
                 ),
-                maxLines: 3,
+                style: TextStyle(color: AppColors.textPrimary),
                 textCapitalization: TextCapitalization.sentences,
+                maxLines: 3,
               ),
               const SizedBox(height: 24),
 
-              // Enhanced Business Information Section
-              Text(
-                'Business Information',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 16),
-
-              // Customer Type Selection
-              DropdownButtonFormField<String>(
-                value: _customerType,
-                decoration: const InputDecoration(
-                  labelText: 'Customer Type',
-                  prefixIcon: Icon(Icons.category),
-                  border: OutlineInputBorder(),
-                ),
-                items: const [
-                  DropdownMenuItem(
-                    value: 'Regular',
-                    child: Text('Regular Customer'),
-                  ),
-                  DropdownMenuItem(
-                    value: 'Premium',
-                    child: Text('Premium Customer'),
-                  ),
-                  DropdownMenuItem(value: 'VIP', child: Text('VIP Customer')),
-                  DropdownMenuItem(
-                    value: 'Corporate',
-                    child: Text('Corporate Client'),
-                  ),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _customerType = value!;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Credit Limit
-              TextFormField(
-                controller: _creditLimitController,
-                decoration: const InputDecoration(
-                  labelText: 'Credit Limit (Rs.) (Optional)',
-                  hintText: 'Maximum credit amount',
-                  prefixIcon: Icon(Icons.account_balance),
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value != null && value.isNotEmpty) {
-                    final amount = double.tryParse(value);
-                    if (amount == null || amount < 0) {
-                      return 'Please enter a valid credit limit';
-                    }
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              // Risk Assessment
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              // Action buttons
+              Row(
                 children: [
-                  Text(
-                    'Risk Assessment: ${_getRiskLabel(_riskLevel)}',
-                    style: Theme.of(context).textTheme.bodyLarge,
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.cardBackground,
+                        foregroundColor: AppColors.textPrimary,
+                        side: BorderSide(color: AppColors.border),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text('Cancel'),
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Slider(
-                    value: _riskLevel.toDouble(),
-                    min: 1,
-                    max: 5,
-                    divisions: 4,
-                    label: _getRiskLabel(_riskLevel),
-                    onChanged: (value) {
-                      setState(() {
-                        _riskLevel = value.round();
-                      });
-                    },
-                  ),
-                  Text(
-                    '1 = Very Low Risk, 5 = High Risk',
-                    style: Theme.of(context).textTheme.bodySmall,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _saveCustomer,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.buttonBackground,
+                        foregroundColor: AppColors.buttonText,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 4,
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text(
+                              _isEditing ? 'Update Customer' : 'Add Customer',
+                            ),
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
-
-              // Reference Contact
-              TextFormField(
-                controller: _referenceController,
-                decoration: const InputDecoration(
-                  labelText: 'Reference Contact (Optional)',
-                  hintText: 'Reference person name and contact',
-                  prefixIcon: Icon(Icons.contact_phone),
-                  border: OutlineInputBorder(),
-                ),
-                textCapitalization: TextCapitalization.words,
-              ),
-              const SizedBox(height: 16),
-
-              // Quick action option
-              if (!_isEditing)
-                SwitchListTile(
-                  title: const Text('Create Installment Plan'),
-                  subtitle: const Text(
-                    'Create an installment plan immediately after adding customer',
-                  ),
-                  value: _createInstallmentPlan,
-                  onChanged: (value) {
-                    setState(() {
-                      _createInstallmentPlan = value;
-                    });
-                  },
-                  secondary: const Icon(Icons.assignment_add),
-                ),
-              const SizedBox(height: 32),
-
-              // Submit button
-              ElevatedButton(
-                onPressed: _isLoading ? null : _submitForm,
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text(
-                  _isLoading
-                      ? 'Processing...'
-                      : (_isEditing ? 'Update Customer' : 'Add Customer'),
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Cancel button
-              OutlinedButton(
-                onPressed: _isLoading ? null : () => Navigator.pop(context),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text('Cancel', style: TextStyle(fontSize: 16)),
-              ),
             ],
           ),
         ),
@@ -507,7 +503,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
     }
   }
 
-  Future<void> _submitForm() async {
+  Future<void> _saveCustomer() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }

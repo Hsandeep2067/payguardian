@@ -129,11 +129,13 @@ class _CustomersScreenState extends State<CustomersScreen> {
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Search customers...',
-                hintStyle: const TextStyle(color: Colors.white70),
-                prefixIcon: const Icon(Icons.search, color: Color(0xFF94a3b8)),
+                hintStyle: TextStyle(
+                  color: AppColors.textPrimary.withOpacity(0.7),
+                ),
+                prefixIcon: Icon(Icons.search, color: AppColors.iconPrimary),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear, color: Color(0xFF94a3b8)),
+                        icon: Icon(Icons.clear, color: AppColors.iconPrimary),
                         onPressed: () {
                           _searchController.clear();
                           setState(() {
