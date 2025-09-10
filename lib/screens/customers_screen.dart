@@ -76,24 +76,151 @@ class _CustomersScreenState extends State<CustomersScreen> {
             ),
           ],
         ),
-        trailing: Icon(
-          Icons.arrow_forward_ios,
-          color: AppColors.iconPrimary,
-          size: 16,
+        trailing: PopupMenuButton<String>(
+          icon: Icon(Icons.more_vert, color: AppColors.iconPrimary),
+          color: AppColors.cardBackground,
+          onSelected: (String result) {
+            switch (result) {
+              case 'view':
+                _viewCustomer(context, customer);
+                break;
+              case 'edit':
+                _editCustomer(context, customer);
+                break;
+              case 'delete':
+                _deleteCustomer(context, customer);
+                break;
+            }
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            PopupMenuItem<String>(
+              value: 'view',
+              child: ListTile(
+                leading: Icon(Icons.visibility, color: AppColors.iconPrimary),
+                title: Text(
+                  'View',
+                  style: TextStyle(color: AppColors.textPrimary),
+                ),
+              ),
+            ),
+            PopupMenuItem<String>(
+              value: 'edit',
+              child: ListTile(
+                leading: Icon(Icons.edit, color: AppColors.iconPrimary),
+                title: Text(
+                  'Edit',
+                  style: TextStyle(color: AppColors.textPrimary),
+                ),
+              ),
+            ),
+            PopupMenuDivider(),
+            PopupMenuItem<String>(
+              value: 'delete',
+              child: ListTile(
+                leading: Icon(Icons.delete, color: Colors.red),
+                title: Text('Delete', style: TextStyle(color: Colors.red)),
+              ),
+            ),
+          ],
         ),
         onTap: () {
-          // Only navigate if customer has an ID
-          if (customer.id != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) =>
-                    CustomerDetailsScreen(customerId: customer.id!),
-              ),
-            );
-          }
+          _viewCustomer(context, customer);
         },
       ),
+    );
+  }
+
+  void _viewCustomer(BuildContext context, Customer customer) {
+    // Only navigate if customer has an ID
+    if (customer.id != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CustomerDetailsScreen(customerId: customer.id!),
+        ),
+      );
+    }
+  }
+
+  void _editCustomer(BuildContext context, Customer customer) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddCustomerScreen(customer: customer),
+      ),
+    );
+  }
+
+  void _deleteCustomer(BuildContext context, Customer customer) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Delete Customer',
+            style: TextStyle(color: AppColors.textPrimary),
+          ),
+          content: Text(
+            'Are you sure you want to delete ${customer.name}? This action cannot be undone and will also delete all associated installment plans and payments.',
+            style: TextStyle(color: AppColors.textPrimary),
+          ),
+          backgroundColor: AppColors.cardBackground,
+          titleTextStyle: TextStyle(
+            color: AppColors.textPrimary,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+          contentTextStyle: TextStyle(color: AppColors.textPrimary),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: AppColors.textPrimary),
+              ),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.textPrimary,
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                final customerProvider = context.read<CustomerProvider>();
+                final success = await customerProvider.deleteCustomer(
+                  customer.id!,
+                );
+
+                if (context.mounted) {
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('${customer.name} deleted successfully'),
+                        backgroundColor: AppColors.success,
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Failed to delete customer: ${customerProvider.error}',
+                        ),
+                        backgroundColor: AppColors.error,
+                      ),
+                    );
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.error,
+                foregroundColor: AppColors.buttonText,
+              ),
+              child: const Text('Delete'),
+            ),
+          ],
+        );
+      },
     );
   }
 
