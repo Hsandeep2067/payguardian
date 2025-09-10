@@ -51,10 +51,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
     _nicController.text = customer.nic;
     _addressController.text = customer.address;
     _notesController.text = customer.notes;
-    // Note: Additional fields would need to be added to Customer model
-    // For now, we'll use default values for new fields
-    _creditLimitController.text = '';
-    _referenceController.text = '';
+    // Populate new business information fields
+    _customerType = customer.customerType;
+    if (customer.creditLimit != null) {
+      _creditLimitController.text = customer.creditLimit.toString();
+    }
+    _riskLevel = customer.riskLevel;
+    _referenceController.text = customer.referenceContact;
   }
 
   @override
@@ -294,6 +297,250 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                 style: TextStyle(color: AppColors.textPrimary),
                 textCapitalization: TextCapitalization.sentences,
                 maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+
+              // Business Information Section
+              Card(
+                color: AppColors.cardBackground,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.business, color: AppColors.iconPrimary),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Business Information',
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(color: AppColors.textPrimary),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Customer Type Dropdown
+                      DropdownButtonFormField<String>(
+                        value: _customerType,
+                        decoration: InputDecoration(
+                          labelText: 'Customer Type',
+                          prefixIcon: Icon(
+                            Icons.category,
+                            color: AppColors.iconPrimary,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: AppColors.border),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: AppColors.accent,
+                              width: 2,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: AppColors.cardBackground,
+                          labelStyle: TextStyle(color: AppColors.textPrimary),
+                        ),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'Regular',
+                            child: Text('Regular'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'Premium',
+                            child: Text('Premium'),
+                          ),
+                          DropdownMenuItem(value: 'VIP', child: Text('VIP')),
+                          DropdownMenuItem(
+                            value: 'Corporate',
+                            child: Text('Corporate'),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          if (value != null) {
+                            setState(() {
+                              _customerType = value;
+                            });
+                          }
+                        },
+                        style: TextStyle(color: AppColors.textPrimary),
+                        dropdownColor: AppColors.cardBackground,
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Credit Limit Field
+                      TextFormField(
+                        controller: _creditLimitController,
+                        decoration: InputDecoration(
+                          labelText: 'Credit Limit (Rs.)',
+                          hintText: 'Enter credit limit',
+                          prefixIcon: Icon(
+                            Icons.account_balance,
+                            color: AppColors.iconPrimary,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: AppColors.border),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: AppColors.accent,
+                              width: 2,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: AppColors.cardBackground,
+                          labelStyle: TextStyle(color: AppColors.textPrimary),
+                          hintStyle: TextStyle(
+                            color: AppColors.textPrimary.withOpacity(0.7),
+                          ),
+                        ),
+                        style: TextStyle(color: AppColors.textPrimary),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value != null && value.isNotEmpty) {
+                            final creditLimit = double.tryParse(value);
+                            if (creditLimit == null || creditLimit < 0) {
+                              return 'Please enter a valid credit limit';
+                            }
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Risk Assessment Slider
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Risk Assessment: ${_getRiskLabel(_riskLevel)} ($_riskLevel/5)',
+                            style: TextStyle(color: AppColors.textPrimary),
+                          ),
+                          const SizedBox(height: 8),
+                          SliderTheme(
+                            data: SliderTheme.of(context).copyWith(
+                              activeTrackColor: AppColors.primary,
+                              inactiveTrackColor: AppColors.border,
+                              thumbColor: AppColors.primary,
+                              thumbShape: const RoundSliderThumbShape(
+                                enabledThumbRadius: 12.0,
+                              ),
+                              overlayShape: const RoundSliderOverlayShape(
+                                overlayRadius: 24.0,
+                              ),
+                            ),
+                            child: Slider(
+                              value: _riskLevel.toDouble(),
+                              min: 1,
+                              max: 5,
+                              divisions: 4,
+                              label: _getRiskLabel(_riskLevel),
+                              onChanged: (value) {
+                                setState(() {
+                                  _riskLevel = value.toInt();
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Reference Contact Field
+                      TextFormField(
+                        controller: _referenceController,
+                        decoration: InputDecoration(
+                          labelText: 'Reference Contact',
+                          hintText: 'Enter reference contact number',
+                          prefixIcon: Icon(
+                            Icons.contact_phone,
+                            color: AppColors.iconPrimary,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: AppColors.border),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: AppColors.accent,
+                              width: 2,
+                            ),
+                          ),
+                          filled: true,
+                          fillColor: AppColors.cardBackground,
+                          labelStyle: TextStyle(color: AppColors.textPrimary),
+                          hintStyle: TextStyle(
+                            color: AppColors.textPrimary.withOpacity(0.7),
+                          ),
+                        ),
+                        style: TextStyle(color: AppColors.textPrimary),
+                        keyboardType: TextInputType.phone,
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Create Installment Plan Toggle
+                      if (!_isEditing) ...[
+                        Divider(color: AppColors.border),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Create Installment Plan',
+                                    style: TextStyle(
+                                      color: AppColors.textPrimary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    'Create an installment plan immediately after adding this customer',
+                                    style: TextStyle(
+                                      color: AppColors.textPrimary.withOpacity(
+                                        0.7,
+                                      ),
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Switch(
+                              value: _createInstallmentPlan,
+                              onChanged: (value) {
+                                setState(() {
+                                  _createInstallmentPlan = value;
+                                });
+                              },
+                              activeColor: AppColors.primary,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
 
@@ -545,6 +792,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               nic: _nicController.text.trim(),
               address: _addressController.text.trim(),
               notes: enhancedNotes,
+              // New business information fields
+              customerType: _customerType,
+              creditLimit: _creditLimitController.text.isEmpty
+                  ? null
+                  : double.tryParse(_creditLimitController.text),
+              riskLevel: _riskLevel,
+              referenceContact: _referenceController.text.trim(),
               updatedAt: now,
             )
           : Customer(
@@ -553,6 +807,13 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               nic: _nicController.text.trim(),
               address: _addressController.text.trim(),
               notes: enhancedNotes,
+              // New business information fields
+              customerType: _customerType,
+              creditLimit: _creditLimitController.text.isEmpty
+                  ? null
+                  : double.tryParse(_creditLimitController.text),
+              riskLevel: _riskLevel,
+              referenceContact: _referenceController.text.trim(),
               createdAt: now,
               updatedAt: now,
             );
@@ -581,7 +842,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(message),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColors.success,
               action: !_isEditing && _createInstallmentPlan
                   ? SnackBarAction(
                       label: 'CREATE PLAN',
@@ -589,10 +850,11 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                         // Navigate to create installment plan
                         // This would need to be implemented
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
+                          SnackBar(
+                            content: const Text(
                               'Navigate to create installment plan',
                             ),
+                            backgroundColor: AppColors.success,
                           ),
                         );
                       },
@@ -606,7 +868,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               'Failed to ${_isEditing ? 'update' : 'add'} customer';
 
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: AppColors.error,
+            ),
           );
         }
       }
@@ -615,7 +880,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('An error occurred: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }
