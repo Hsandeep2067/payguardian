@@ -201,6 +201,13 @@ class InstallmentProvider extends ChangeNotifier {
         .toList();
   }
 
+  // Calculate total amount for customer
+  double getTotalAmountForCustomer(String customerId) {
+    return _installmentPlans
+        .where((plan) => plan.customerId == customerId)
+        .fold(0.0, (sum, plan) => sum + plan.totalAmount);
+  }
+
   // Calculate total pending amount for customer
   double getTotalPendingAmountForCustomer(String customerId) {
     return _payments

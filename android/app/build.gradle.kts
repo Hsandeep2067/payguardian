@@ -25,7 +25,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.payguardian"
-        minSdk = 23   // ✅ FIXED (Kotlin DSL uses assignment)
+        minSdk = flutter.minSdkVersion   // ✅ FIXED (Kotlin DSL uses assignment)
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

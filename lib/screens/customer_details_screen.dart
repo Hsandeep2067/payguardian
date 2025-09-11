@@ -291,7 +291,44 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
                         children: [
                           Expanded(
                             child: _buildSummaryCard(
-                              'Total Paid',
+                              'Total Amount',
+                              NumberFormat.currency(
+                                symbol: 'Rs. ',
+                                decimalDigits: 0,
+                              ).format(
+                                installmentProvider.getTotalAmountForCustomer(
+                                  widget.customerId,
+                                ),
+                              ),
+                              Colors.purple,
+                              Icons.money,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _buildSummaryCard(
+                              'Advanced Paid',
+                              NumberFormat.currency(
+                                symbol: 'Rs. ',
+                                decimalDigits: 0,
+                              ).format(
+                                installmentProvider
+                                    .getTotalAdvancedPaidAmountForCustomer(
+                                      widget.customerId,
+                                    ),
+                              ),
+                              Colors.blue,
+                              Icons.payment,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildSummaryCard(
+                              'Balance Paid',
                               NumberFormat.currency(
                                 symbol: 'Rs. ',
                                 decimalDigits: 0,
@@ -314,32 +351,7 @@ class _CustomerDetailsScreenState extends State<CustomerDetailsScreen>
                           ),
                         ],
                       ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildSummaryCard(
-                              'Advanced Paid',
-                              NumberFormat.currency(
-                                symbol: 'Rs. ',
-                                decimalDigits: 0,
-                              ).format(
-                                installmentProvider
-                                    .getTotalAdvancedPaidAmountForCustomer(
-                                      widget.customerId,
-                                    ),
-                              ),
-                              Colors.blue,
-                              Icons.payment,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child:
-                                Container(), // Empty container to maintain layout
-                          ),
-                        ],
-                      ),
+
                       if (nextPayment != null) ...[
                         const SizedBox(height: 16),
                         Container(
